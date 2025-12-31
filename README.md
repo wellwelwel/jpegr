@@ -1,6 +1,6 @@
-# 🖼️ JPEGR: Image to JPEG with Size-Targeted Compression
+# 🖼️ JPEGR
 
-A dependency-free browser module that takes **any image format** supported by `HTMLCanvasElement` and converts it to **JPEG**, applying **size-targeted compression** to meet a configurable maximum output size.
+A browser module to take **all image format** supported by `HTMLCanvasElement` and convert them to **JPEG** with **size-targeted compression** to meet a configurable maximum output size.
 
 - [**JPEGR Playground**](wellwelwel.github.io/jpegr/) 🎮
 
