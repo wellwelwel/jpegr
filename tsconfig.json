@@ -1,0 +1,30 @@
+{
+  "include": ["src"],
+  "compilerOptions": {
+    "target": "es2015",
+    "lib": ["es2015", "DOM"],
+    "module": "es2015",
+    "moduleResolution": "bundler",
+    "outDir": "lib",
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "allowJs": false,
+    "strict": true,
+    "alwaysStrict": true,
+    "strictFunctionTypes": true,
+    "strictNullChecks": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": false,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "noImplicitAny": true,
+    "removeComments": false,
+    "sourceMap": false,
+    "esModuleInterop": true,
+    "noEmitOnError": true,
+    "declaration": true,
+    "declarationDir": "lib",
+    "allowSyntheticDefaultImports": false,
+    "skipLibCheck": true
+  }
+}
