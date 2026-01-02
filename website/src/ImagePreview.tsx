@@ -1,4 +1,4 @@
-import { usePlayground } from './hooks/JPGER/use';
+import { usePlayground } from './hooks/JPGER/use.jsx';
 import './css/styles.scss';
 
 export const ImagePreview = () => {
@@ -261,6 +261,15 @@ export const ImagePreview = () => {
               <div className='jpegr-v'>
                 <span className={badgeClass(runtimeSupport.fileReader)}>
                   {runtimeSupport.fileReader ? 'Supported' : 'Not supported'}
+                </span>
+              </div>
+
+              <div className='jpegr-k'>createImageBitmap</div>
+              <div className='jpegr-v'>
+                <span className={badgeClass(runtimeSupport.createImageBitmap)}>
+                  {runtimeSupport.createImageBitmap
+                    ? 'Supported'
+                    : 'Not supported'}
                 </span>
               </div>
 

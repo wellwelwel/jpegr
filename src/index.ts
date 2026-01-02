@@ -3,19 +3,18 @@ import type {
   ProcessedImage,
   ProcessedImageMetadata,
   ProcessResult,
-} from './types';
+} from './core/types.js';
+import { compressToFit } from './core/compressor.js';
+import { decodeImage } from './core/decoder.js';
+import { blobToDataUrl, formatBytes } from './core/utils.js';
 
-const BYTES_IN_KIB = 1024;
-const DEFAULT_MAX_SIZE_BYTES = 1 * BYTES_IN_KIB * BYTES_IN_KIB;
+const DEFAULT_MAX_SIZE = 1024 * 1024; // 1 MB
 const DEFAULT_QUALITY = 1;
-const COMPRESSION_STEP = 0.1;
-const MIN_COMPRESSION_QUALITY = 0.1;
+const DEFAULT_COMPRESSION_STEP = 0.1;
+const DEFAULT_MIN_QUALITY = 0.1;
 
 /**
- * **JPGER** - Module for processing images in the browser.
- *
- * - Converts any image to JPEG with automatic compression.
- * - Compatible with older browsers through fallbacks.
+ * **JPGER** - Browser image processing module.
  */
 export class JPGER {
   private processedImage: ProcessedImage | null = null;
@@ -28,140 +27,101 @@ export class JPGER {
 
   constructor(options: JPGEROptions = Object.create(null)) {
     this.previewElement = options.preview ?? null;
-
-    this.maxSize = options.maxSize ?? DEFAULT_MAX_SIZE_BYTES;
+    this.maxSize = options.maxSize ?? DEFAULT_MAX_SIZE;
     this.maxQuality = options.maxQuality ?? DEFAULT_QUALITY;
-    this.compressionStep = options.compressionStep ?? COMPRESSION_STEP;
-    this.minQuality = options.minQuality ?? MIN_COMPRESSION_QUALITY;
+    this.compressionStep = options.compressionStep ?? DEFAULT_COMPRESSION_STEP;
+    this.minQuality = options.minQuality ?? DEFAULT_MIN_QUALITY;
 
     this.syncPreview();
   }
 
-  /**
-   * Returns the processed image (read-only)
-   */
   get image(): ProcessedImage | null {
     return this.processedImage;
   }
 
-  /**
-   * Returns the processed file size in bytes
-   */
   get fileSize(): number {
     return this.processedImage?.blob.size ?? 0;
   }
 
-  /**
-   * Returns the formatted size (KB or MB)
-   */
   get fileSizeFormatted(): string {
-    const bytes = this.fileSize;
-
-    if (bytes === 0) return '0 B';
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(2)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+    return formatBytes(this.fileSize);
   }
 
-  /**
-   * Indicates whether the image was converted from another format to JPEG
-   */
   get wasConverted(): boolean {
     return this.processedImage?.metadata.wasConverted ?? false;
   }
 
-  /**
-   * Indicates whether it was necessary to apply additional compression
-   */
   get wasCompressed(): boolean {
     return this.processedImage?.metadata.wasCompressed ?? false;
   }
 
-  /**
-   * Returns the applied compression quality (0.1 to 1.0)
-   */
   get compressionQuality(): number {
     return this.processedImage?.metadata.compressionQuality ?? this.maxQuality;
   }
 
-  /**
-   * Returns the full metadata for the processed image
-   */
   get metadata(): ProcessedImageMetadata | null {
     return this.processedImage?.metadata ?? null;
   }
 
-  /**
-   * Clears the processed image from memory
-   */
   clear(): void {
     this.processedImage = null;
     this.syncPreview();
   }
 
-  /**
-   * Processes an image from a file input element
-   */
   async fromInput(
-    inputElement: HTMLInputElement,
-    maxSizeBytes = this.maxSize
+    input: HTMLInputElement,
+    maxSize = this.maxSize
   ): Promise<ProcessResult> {
-    const file = inputElement.files?.[0];
+    const file = input.files?.[0];
     if (!file) return { success: false, error: 'No file selected.' };
-
-    return this.fromFile(file, maxSizeBytes);
+    return this.fromFile(file, maxSize);
   }
 
-  /**
-   * Processes an image file
-   */
-  async fromFile(
-    file: File,
-    maxSizeBytes = this.maxSize
-  ): Promise<ProcessResult> {
+  async fromFile(file: File, maxSize = this.maxSize): Promise<ProcessResult> {
+    let decoded = null;
+
     try {
-      const dataUrl = await this.fileToDataUrl(file);
-      const image = await this.loadImage(dataUrl);
       const originalSize = file.size;
       const originalType = file.type;
 
-      let processedBlob: Blob;
+      // Fast path: JPEG within size limit
+      const isJpegWithinLimit =
+        file.type === 'image/jpeg' && file.size <= maxSize;
+
+      let blob: Blob;
       let wasConverted = false;
       let wasCompressed = false;
       let finalQuality = this.maxQuality;
 
-      const isJpegWithinLimit =
-        file.type === 'image/jpeg' && file.size <= maxSizeBytes;
-
       if (isJpegWithinLimit) {
-        processedBlob = file;
+        // Pass through original file
+        blob = file;
       } else {
+        // Decode and compress
         wasConverted = file.type !== 'image/jpeg';
-        processedBlob = await this.convertToJpeg(image, this.maxQuality);
+        decoded = await decodeImage(file);
 
-        if (processedBlob.size > maxSizeBytes) {
-          wasCompressed = true;
-          let currentQuality = this.maxQuality - this.compressionStep;
+        const result = await compressToFit(decoded, {
+          maxSize,
+          maxQuality: this.maxQuality,
+          minQuality: this.minQuality,
+          compressionStep: this.compressionStep,
+        });
 
-          while (
-            processedBlob.size >= maxSizeBytes &&
-            currentQuality >= this.minQuality
-          ) {
-            processedBlob = await this.convertToJpeg(image, currentQuality);
-            finalQuality = currentQuality;
-            currentQuality -= this.compressionStep;
-          }
-        }
+        blob = result.blob;
+        wasCompressed = result.wasCompressed;
+        finalQuality = result.finalQuality;
       }
 
-      const processedDataUrl = await this.blobToDataUrl(processedBlob);
+      const dataUrl = await blobToDataUrl(blob);
+
       const processed: ProcessedImage = Object.freeze({
-        blob: processedBlob,
-        dataUrl: processedDataUrl,
+        blob,
+        dataUrl,
         metadata: Object.freeze({
           originalSize,
           originalType,
-          processedSize: processedBlob.size,
+          processedSize: blob.size,
           wasConverted,
           wasCompressed,
           compressionQuality: finalQuality,
@@ -176,16 +136,13 @@ export class JPGER {
       return {
         success: false,
         error:
-          error instanceof Error
-            ? error.message
-            : 'Error while processing the image.',
+          error instanceof Error ? error.message : 'Failed to process image.',
       };
+    } finally {
+      decoded?.dispose();
     }
   }
 
-  /**
-   * Uploads the processed image to the backend
-   */
   async upload(
     url: string,
     options?: {
@@ -194,13 +151,15 @@ export class JPGER {
       init?: RequestInit;
     }
   ): Promise<Response> {
-    if (!this.processedImage) throw new Error('No processed image to upload.');
+    if (!this.processedImage) {
+      throw new Error('No processed image to upload.');
+    }
 
     const {
       field = 'image',
       name = 'image.jpeg',
       init,
-    } = options || Object.create(null);
+    } = options ?? Object.create(null);
 
     const formData = new FormData();
     formData.append(field, this.processedImage.blob, name);
@@ -211,144 +170,32 @@ export class JPGER {
       body: formData,
     });
 
-    if (!response.ok) throw new Error('Failed to upload image to the server');
+    if (!response.ok) {
+      throw new Error('Upload failed');
+    }
 
     return response;
   }
 
-  // ========================================
-  // Private preview sync
-  // ========================================
-
   private syncPreview(): void {
-    const target = this.previewElement;
-    if (!target) return;
+    const element = this.previewElement;
+    if (!element) return;
 
     if (!this.processedImage) {
-      target.removeAttribute('src');
-      target.removeAttribute('srcset');
-      target.alt = '';
+      element.removeAttribute('src');
+      element.removeAttribute('srcset');
+      element.alt = '';
       return;
     }
 
-    target.src = this.processedImage.dataUrl;
-    target.alt = 'Selected image preview';
-  }
-
-  // ========================================
-  // Private conversion methods
-  // ========================================
-
-  private fileToDataUrl(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-
-      reader.onload = () => {
-        typeof reader.result === 'string'
-          ? resolve(reader.result)
-          : reject(new Error('Failed to read file'));
-      };
-      reader.onerror = () => reject(reader.error);
-      reader.readAsDataURL(file);
-    });
-  }
-
-  private blobToDataUrl(blob: Blob): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-
-      reader.onload = () => {
-        typeof reader.result === 'string'
-          ? resolve(reader.result)
-          : reject(new Error('Failed to convert blob'));
-      };
-      reader.onerror = () => reject(reader.error);
-      reader.readAsDataURL(blob);
-    });
-  }
-
-  private loadImage(source: string): Promise<HTMLImageElement> {
-    return new Promise((resolve, reject) => {
-      const image = new Image();
-
-      image.onload = () => resolve(image);
-      image.onerror = () =>
-        reject(new Error('The selected file is not a valid image.'));
-      image.src = source;
-    });
-  }
-
-  private convertToJpeg(
-    image: HTMLImageElement,
-    quality: number
-  ): Promise<Blob> {
-    return new Promise((resolve, reject) => {
-      try {
-        const canvas = document.createElement('canvas');
-
-        canvas.width = image.naturalWidth || image.width;
-        canvas.height = image.naturalHeight || image.height;
-
-        const canvasContext = canvas.getContext('2d');
-        if (!canvasContext) {
-          reject(new Error('Canvas not supported'));
-          return;
-        }
-
-        // Black background for transparency (JPEG does not support alpha)
-        canvasContext.fillStyle = '#000000';
-        canvasContext.fillRect(0, 0, canvas.width, canvas.height);
-        canvasContext.drawImage(image, 0, 0);
-
-        this.canvasToBlob(canvas, quality).then(resolve).catch(reject);
-      } catch (error) {
-        reject(error);
-      }
-    });
-  }
-
-  private canvasToBlob(
-    canvas: HTMLCanvasElement,
-    quality: number
-  ): Promise<Blob> {
-    if (typeof canvas.toBlob === 'function')
-      return this.canvasToBlobModern(canvas, quality);
-
-    return Promise.resolve(this.canvasToBlobLegacy(canvas, quality));
-  }
-
-  private canvasToBlobModern(
-    canvas: HTMLCanvasElement,
-    quality: number
-  ): Promise<Blob> {
-    return new Promise((resolve, reject) => {
-      canvas.toBlob(
-        (blob) => {
-          blob ? resolve(blob) : reject(new Error('Failed to convert image'));
-        },
-        'image/jpeg',
-        quality
-      );
-    });
-  }
-
-  private canvasToBlobLegacy(canvas: HTMLCanvasElement, quality: number): Blob {
-    const dataUrl = canvas.toDataURL('image/jpeg', quality);
-
-    return this.dataUrlToBlob(dataUrl);
-  }
-
-  private dataUrlToBlob(dataUrl: string): Blob {
-    const parts = dataUrl.split(',');
-    const base64Content = parts[1];
-    const mimeType = parts[0].split(':')[1].split(';')[0];
-    const decodedContent = atob(base64Content);
-    const arrayBuffer = new ArrayBuffer(decodedContent.length);
-    const byteArray = new Uint8Array(arrayBuffer);
-
-    for (let byteIndex = 0; byteIndex < decodedContent.length; byteIndex++)
-      byteArray[byteIndex] = decodedContent.charCodeAt(byteIndex);
-
-    return new Blob([arrayBuffer], { type: mimeType });
+    element.src = this.processedImage.dataUrl;
+    element.alt = 'Image preview';
   }
 }
+
+export type {
+  JPGEROptions,
+  ProcessedImage,
+  ProcessedImageMetadata,
+  ProcessResult,
+} from './core/types.js';

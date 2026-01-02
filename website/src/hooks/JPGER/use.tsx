@@ -1,17 +1,20 @@
 import type { ChangeEvent } from 'react';
-import type { JPGEROptions, ProcessResult } from '../../../../src/types';
-import type { JPGERPlaygroundViewModel, RunDebug } from '../../types';
+import type {
+  JPGEROptions,
+  ProcessResult,
+} from '../../../../src/core/types.js';
+import type { JPGERPlaygroundViewModel, RunDebug } from '../../types.js';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { JPGER } from '../../../../src';
+import { formatBytes } from '../../../../src/core/utils.js';
+import { JPGER } from '../../../../src/index.js';
 import {
   buildJPGEROptions,
-  formatBytes,
   getCanvasOutputStrategy,
   getUserAgent,
   revokeObjectUrl,
   RUNTIME_SUPPORT,
   validateJPGEROptions,
-} from './services';
+} from './services.js';
 
 export const usePlayground = (): JPGERPlaygroundViewModel => {
   const fileInputRef = useRef<HTMLInputElement>(null);

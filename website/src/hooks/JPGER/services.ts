@@ -1,5 +1,5 @@
-import type { JPGEROptions } from '../../../../src/types';
-import type { RuntimeSupport } from '../../types';
+import type { JPGEROptions } from '../../../../src/core/types.js';
+import type { RuntimeSupport } from '../../types.js';
 
 const BYTES_IN_KIB = 1024;
 const BYTES_IN_MIB = BYTES_IN_KIB * BYTES_IN_KIB;
@@ -20,18 +20,12 @@ export const mbToBytes = (mb: number): number => {
   return Math.max(1, bytes);
 };
 
-export const formatBytes = (bytes: number): string => {
-  if (!Number.isFinite(bytes) || bytes <= 0) return '0 B';
-  if (bytes < BYTES_IN_KIB) return `${bytes} B`;
-  if (bytes < BYTES_IN_MIB) return `${(bytes / BYTES_IN_KIB).toFixed(2)} KB`;
-  return `${(bytes / BYTES_IN_MIB).toFixed(2)} MB`;
-};
-
 export const tryPrettifyBody = (body: string): string => {
   const trimmed = body.trim();
   if (!trimmed) return '';
+
   try {
-    const parsed: unknown = JSON.parse(trimmed);
+    const parsed = JSON.parse(trimmed);
     return JSON.stringify(parsed, null, 2);
   } catch {
     return body;
@@ -46,8 +40,9 @@ export const getRuntimeSupport = (): RuntimeSupport => {
 
   return Object.freeze({
     canvasToBlob: !!canvasProto && typeof canvasProto.toBlob === 'function',
-    HTMLCanvasElement: 'HTMLCanvasElement' in globalThis,
+    HTMLCanvasElement: typeof HTMLCanvasElement !== 'undefined',
     fileReader: typeof FileReader !== 'undefined',
+    createImageBitmap: typeof createImageBitmap !== 'undefined',
   });
 };
 

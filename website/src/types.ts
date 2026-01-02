@@ -1,10 +1,11 @@
 import type { ChangeEvent } from 'react';
-import type { JPGEROptions } from '../../src/types';
+import type { JPGEROptions } from '../../src/core/types.js';
 
 export type RuntimeSupport = Readonly<{
   canvasToBlob: boolean;
   HTMLCanvasElement: boolean;
   fileReader: boolean;
+  createImageBitmap: boolean;
 }>;
 
 export type JPGERPlaygroundViewModel = Readonly<{

@@ -35,8 +35,9 @@ A browser module to take **all image formats** supported by `HTMLCanvasElement` 
 
 ## Key features
 
-- **Always outputs JPEG**.
+- Always outputs **JPEG**.
 - Uses the original image when both format and size are within expectations.
+- Normalizes **EXIF** orientation for **JPEG** inputs _(common "bug" in smartphone photos)_.
 - **Automatic compression** starts from a chosen initial quality and will step down as needed until the output fits the size limit or reaches the minimum quality threshold.
 
 ---
@@ -326,12 +327,6 @@ This module requires standard browser APIs:
 ### “Canvas not supported”
 
 The browser does not provide a 2D canvas context (`canvas.getContext('2d')` returned `null`). This can happen in very old browsers or restricted environments.
-
----
-
-## Considerations
-
-- **EXIF orientation is not corrected.** Some JPEG photos may appear rotated if you rely on EXIF orientation metadata. If you need orientation correction, look for solutions around “EXIF orientation canvas drawImage” and consider reading EXIF with a dedicated library.
 
 ---
 
