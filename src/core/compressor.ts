@@ -5,13 +5,6 @@ import type {
 } from './types.js';
 import { encodeToJpeg } from './encoder.js';
 
-/**
- * Compresses an image to fit within size constraints.
- *
- * Algorithm:
- * 1. Try encoding at max quality
- * 2. If too large, reduce quality by step until it fits or min quality reached
- */
 export const compressToFit = async (
   decoded: DecodedImage,
   options: CompressionOptions

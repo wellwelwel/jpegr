@@ -23,14 +23,7 @@ const loadImage = (src: string): Promise<HTMLImageElement> => {
   });
 };
 
-/**
- * Decodes an image file into a format suitable for canvas rendering.
- *
- * 1. Prefer `createImageBitmap` with `imageOrientation: 'from-image'`
- * 2. Fallback to `HTMLImageElement` for legacy browsers
- */
 export const decodeImage = async (file: File): Promise<DecodedImage> => {
-  // Modern path: createImageBitmap with automatic orientation
   if (typeof createImageBitmap === 'function') {
     try {
       const bitmap = await createImageBitmap(file, {
@@ -43,12 +36,10 @@ export const decodeImage = async (file: File): Promise<DecodedImage> => {
         height: bitmap.height,
         dispose: () => bitmap.close(),
       };
-    } catch {
-      // Fall through to legacy path
-    }
+    } catch {}
   }
 
-  // Legacy path: HTMLImageElement
+  // Fallback
   const dataUrl = await fileToDataUrl(file);
   const image = await loadImage(dataUrl);
 
@@ -56,8 +47,6 @@ export const decodeImage = async (file: File): Promise<DecodedImage> => {
     source: image,
     width: image.naturalWidth || image.width,
     height: image.naturalHeight || image.height,
-    dispose: () => {
-      // HTMLImageElement doesn't need explicit cleanup
-    },
+    dispose: () => {},
   };
 };
