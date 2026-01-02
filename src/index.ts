@@ -73,7 +73,12 @@ export class JPGER {
     maxSize = this.maxSize
   ): Promise<ProcessResult> {
     const file = input.files?.[0];
-    if (!file) return { success: false, error: 'No file selected.' };
+    if (!file)
+      return {
+        success: false,
+        error: 'No file selected.',
+      };
+
     return this.fromFile(file, maxSize);
   }
 
@@ -170,9 +175,7 @@ export class JPGER {
       body: formData,
     });
 
-    if (!response.ok) {
-      throw new Error('Upload failed');
-    }
+    if (!response.ok) throw new Error('Upload failed');
 
     return response;
   }

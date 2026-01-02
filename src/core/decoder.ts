@@ -17,6 +17,7 @@ const fileToDataUrl = (file: File): Promise<string> => {
 const loadImage = (src: string): Promise<HTMLImageElement> => {
   return new Promise((resolve, reject) => {
     const image = new Image();
+
     image.onload = () => resolve(image);
     image.onerror = () => reject(new Error('Invalid image file'));
     image.src = src;
