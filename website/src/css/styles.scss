@@ -16,30 +16,30 @@
   --jpegr-strong: #dbe6ff;
 
   /* Buttons */
-  --jpegr-btn-bg: #1a2752;
-  --jpegr-danger-bg: #3a1530;
+  --jpegr-btn-bg: #6b0bff;
+  --jpegr-danger-bg: #ff0090;
 
   /* Status (ok) */
-  --jpegr-ok-border: rgba(64, 164, 255, 0.28);
-  --jpegr-ok-bg: rgba(64, 164, 255, 0.12);
-  --jpegr-ok-fg: #d8efff;
+  --jpegr-ok-border: #6b0bff;
+  --jpegr-ok-bg: rgba(99, 64, 255, 0.12);
+  --jpegr-ok-fg: #dfd8ff;
 
   /* Status (no) */
-  --jpegr-no-border: rgba(255, 0, 128, 0.3);
+  --jpegr-no-border: #ff0090;
   --jpegr-no-bg: rgba(255, 0, 128, 0.12);
   --jpegr-no-fg: #ffd2e8;
 
   /* Messages */
-  --jpegr-error-bg: rgba(255, 0, 128, 0.1);
+  --jpegr-error-bg: #5b002d;
   --jpegr-error-border: rgba(255, 0, 128, 0.25);
-  --jpegr-info-bg: rgba(64, 164, 255, 0.1);
-  --jpegr-info-border: rgba(64, 164, 255, 0.25);
+  --jpegr-info-bg: #232224;
+  --jpegr-info-border: #39333f;
 
   /* Preview */
   --jpegr-preview-bg: #000000;
 
   /* Effects */
-  --jpegr-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+  --jpegr-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
 }
 
 html,
@@ -51,16 +51,10 @@ body {
 body,
 select,
 button {
-  font-family:
-    ui-sans-serif,
-    system-ui,
-    -apple-system,
-    Segoe UI,
-    Roboto,
-    Helvetica,
-    Arial,
-    'Apple Color Emoji',
-    'Segoe UI Emoji';
+  font-family: 'Inter', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
 }
 
 *,
