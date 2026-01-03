@@ -13,6 +13,8 @@ jobs:
   test:
     timeout-minutes: 10
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
     name: Test
     steps:
       - uses: actions/checkout@v4
@@ -35,11 +37,21 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
 
-      - name: Run Playwright tests
-        run: |
-          npm test -- --project chromium
-          npm test -- --project firefox
-          npm test -- --project webkit
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-browsers-${{ hashFiles('package-lock.json') }}
+          restore-keys: playwright-browsers-
+
+      - name: Run Playwright with Chromium
+        run: npm test -- --project chromium
+
+      - name: Run Playwright with Firefox
+        run: npm test -- --project firefox
+
+      - name: Run Playwright with Webkit
+        run: npm test -- --project webkit
 
       # - uses: actions/upload-artifact@v4
       #   if: ${{ !cancelled() }}
