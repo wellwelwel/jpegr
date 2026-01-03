@@ -2,7 +2,7 @@
 
 A browser module to take **all image formats** supported by `HTMLCanvasElement` and convert them to **JPEG** with **size-targeted compression** to meet a configurable maximum output size.
 
-- [**JPEGR Playground**](wellwelwel.github.io/jpegr/) 🎮
+- [**JPEGR Playground**](https://wellwelwel.github.io/jpegr/) 🎮
 
 ---
 

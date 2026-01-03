@@ -1,0 +1,39 @@
+name: 'GitHub Pages'
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Actions - Checkout
+        uses: actions/checkout@v4
+
+      - name: Actions - Setup NodeJS
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Cache Dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ hashFiles('package-lock.json', 'website/package-lock.json') }}
+          restore-keys: npm-
+
+      - name: Installing Dependencies
+        run: cd website && npm ci
+
+      - name: Building Site
+        run: cd website && npm run build
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          allow_empty_commit: false
+          github_token: ${{ secrets.PAT }}
+          publish_branch: 'website'
+          publish_dir: ./website/build

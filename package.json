@@ -1,4 +1,22 @@
 {
+  "name": "jpegr",
+  "version": "0.1.0",
+  "description": "🖼️ Convert any image to JPEG with size-targeted compression.",
+  "main": "./lib/index.js",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wellwelwel/jpegr.git"
+  },
+  "homepage": "https://wellwelwel.github.io/jpegr/",
+  "bugs": {
+    "url": "https://github.com/wellwelwel/jpegr/issues"
+  },
+  "author": "https://github.com/wellwelwel",
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/wellwelwel"
+  },
   "scripts": {
     "build": "tsc",
     "test": "playwright test",
