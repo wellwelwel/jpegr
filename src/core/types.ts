@@ -69,3 +69,21 @@ export type PreviewSource = Readonly<{
   src: string;
   revoke?: () => void;
 }>;
+
+/**
+ * **Note:** When a fallback is not available, **JPEGR** uses the original image.
+ */
+export type RuntimeSupport = Readonly<{
+  /** Fallback availabe: ❌ */
+  FileReader: boolean;
+  /** Fallback availabe: ❌ */
+  Blob: boolean;
+  /** Fallback availabe: ❌ */
+  HTMLCanvasElement: boolean;
+  /** Fallback availabe: ✅ */
+  canvasToBlob: boolean;
+  /** Fallback availabe: ✅ */
+  createObjectURL: boolean;
+  /** Fallback availabe: ✅ */
+  createImageBitmap: boolean;
+}>;

@@ -259,8 +259,8 @@ export const ImagePreview = () => {
 
               <div className='jpegr-k'>FileReader</div>
               <div className='jpegr-v'>
-                <span className={badgeClass(runtimeSupport.fileReader)}>
-                  {runtimeSupport.fileReader ? 'Supported' : 'Not supported'}
+                <span className={badgeClass(runtimeSupport.FileReader)}>
+                  {runtimeSupport.FileReader ? 'Supported' : 'Not supported'}
                 </span>
               </div>
 

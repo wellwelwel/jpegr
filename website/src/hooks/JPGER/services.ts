@@ -1,17 +1,14 @@
-import type { JPGEROptions } from '../../../../src/core/types.js';
-import type { RuntimeSupport } from '../../types.js';
+import type {
+  JPGEROptions,
+  RuntimeSupport,
+} from '../../../../src/core/types.js';
+import { JPGER } from '../../../../src/index.js';
 
 const BYTES_IN_KIB = 1024;
 const BYTES_IN_MIB = BYTES_IN_KIB * BYTES_IN_KIB;
 
-export const clampNumber = (
-  value: number,
-  min: number,
-  max: number
-): number => {
-  if (!Number.isFinite(value)) return min;
-  return Math.min(max, Math.max(min, value));
-};
+export const clampNumber = (value: number, min: number, max: number): number =>
+  Math.min(max, Math.max(min, value));
 
 export const mbToBytes = (mb: number): number => {
   const safeMb = clampNumber(mb, 0.01, 10_000);
@@ -32,26 +29,7 @@ export const tryPrettifyBody = (body: string): string => {
   }
 };
 
-export const getRuntimeSupport = (): RuntimeSupport => {
-  const canvasProto =
-    typeof HTMLCanvasElement !== 'undefined'
-      ? HTMLCanvasElement.prototype
-      : null;
-
-  return Object.freeze({
-    canvasToBlob: !!canvasProto && typeof canvasProto.toBlob === 'function',
-    HTMLCanvasElement: typeof HTMLCanvasElement !== 'undefined',
-    fileReader: typeof FileReader !== 'undefined',
-    createImageBitmap: typeof createImageBitmap !== 'undefined',
-    Blob: typeof Blob !== 'undefined',
-    createObjectURL:
-      typeof URL !== 'undefined' &&
-      typeof URL.createObjectURL === 'function' &&
-      typeof URL.revokeObjectURL === 'function',
-  });
-};
-
-export const RUNTIME_SUPPORT: RuntimeSupport = getRuntimeSupport();
+export const RUNTIME_SUPPORT = JPGER.getRuntimeSupport();
 
 export const getUserAgent = (): string => {
   if (typeof navigator === 'undefined') return 'N/A';

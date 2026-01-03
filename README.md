@@ -118,6 +118,26 @@ const jpegr = new JPGER({
 
 - The example above uses all the default options.
 
+#### `getRuntimeSupport` _(static)_
+
+Returns an object describing the current browser's support for image processing features.
+
+```ts
+import { JPGER } from 'jpegr';
+
+const support = JPGER.getRuntimeSupport();
+// {
+//   FileReader: true,
+//   Blob: true,
+//   HTMLCanvasElement: true,
+//   canvasToBlob: true,
+//   createObjectURL: true,
+//   createImageBitmap: true
+// }
+```
+
+**Use case:** Check feature availability before attempting image processing, or provide fallback UI for unsupported browsers.
+
 ---
 
 ### Methods

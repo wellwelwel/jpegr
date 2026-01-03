@@ -3,9 +3,11 @@ import type {
   ProcessedImage,
   ProcessedImageMetadata,
   ProcessResult,
+  RuntimeSupport,
 } from './core/types.js';
 import { compressToFit } from './core/compressor.js';
 import { decodeImage } from './core/decoder.js';
+import { getRuntimeSupport } from './core/runtime.js';
 import {
   buildPreviewSrc,
   formatBytes,
@@ -21,6 +23,13 @@ const DEFAULT_MIN_QUALITY = 0.1;
  * **JPGER** - Browser image processing module.
  */
 export class JPGER {
+  /**
+   * Returns browser runtime support for image processing features.
+   */
+  static getRuntimeSupport(): RuntimeSupport {
+    return getRuntimeSupport();
+  }
+
   private processedImage: ProcessedImage | null = null;
   private previewElement: HTMLImageElement | null = null;
 
@@ -211,4 +220,5 @@ export type {
   ProcessedImage,
   ProcessedImageMetadata,
   ProcessResult,
+  RuntimeSupport,
 } from './core/types.js';

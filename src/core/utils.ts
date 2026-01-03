@@ -1,25 +1,10 @@
 import type { PreviewSource } from './types.js';
+import { getRuntimeSupport } from './runtime.js';
 
 export const supportsImageProcessing = (): boolean => {
-  if (typeof FileReader === 'undefined') return false;
-  if (typeof Blob === 'undefined') return false;
-  if (
-    typeof URL === 'undefined' ||
-    !URL.createObjectURL ||
-    !URL.revokeObjectURL
-  )
-    return false;
+  const supports = getRuntimeSupport();
 
-  const canvasProto =
-    typeof HTMLCanvasElement !== 'undefined'
-      ? HTMLCanvasElement.prototype
-      : null;
-  const canvasToBlob =
-    !!canvasProto && typeof canvasProto.toBlob === 'function';
-
-  if (!canvasToBlob) return false;
-
-  return true;
+  return supports.FileReader && supports.Blob && supports.HTMLCanvasElement;
 };
 
 export const processDataUrl = (
