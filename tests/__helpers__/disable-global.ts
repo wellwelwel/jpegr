@@ -1,11 +1,8 @@
-import type { FEATURES_TO_TEST } from '../e2e/compression-hash-fallbacks.spec';
+import type { FEATURES_TO_DISABLE } from '../e2e/compression-hash-fallbacks.spec';
 
-type FeatureName = (typeof FEATURES_TO_TEST)[number];
-
-/**
- * Generates a script that disables a specific browser feature.
- */
-export const disableGlobal = (featureName: FeatureName): string => {
+export const disableGlobal = (
+  featureName: (typeof FEATURES_TO_DISABLE)[number]
+): string => {
   switch (featureName) {
     case 'createImageBitmap':
       return 'delete window.createImageBitmap;';

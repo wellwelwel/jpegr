@@ -11,6 +11,7 @@ export default defineConfig({
   retries: env.CI ? 2 : 0,
   workers: env.CI ? 1 : undefined,
   reporter: env.CI ? 'github' : 'html',
+  globalSetup: './tests/global.setup.ts',
   use: {
     baseURL: 'http://localhost:5173',
     trace: 'on-first-retry',
