@@ -16,8 +16,8 @@ export const compressToFit = async (
   let finalQuality = maxQuality;
   let wasCompressed = false;
 
-  // Progressively reduce quality if needed
-  if (blob.size > maxSize) {
+  // Progressively reduce quality
+  if (blob.size >= maxSize) {
     wasCompressed = true;
 
     let currentQuality = maxQuality - compressionStep;
