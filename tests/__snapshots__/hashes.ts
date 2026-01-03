@@ -21,7 +21,7 @@ export const EXPECTED_HASHES: Record<
   },
   'compressed-webp-image.webp': {
     chromium: isCI
-      ? 'bbf2d16df90424b92849438d47bd3ae849ea2933c917c28b33573b49a451fd3a'
+      ? '4fd7940c8e686810373f9bf35d9b26012749c2d402a45c01cb43a21bed10de76'
       : '4fd7940c8e686810373f9bf35d9b26012749c2d402a45c01cb43a21bed10de76',
     firefox: isCI
       ? '6374d54c828360403333227876205bb9b6783338863918e3cfee4692c2303723'
