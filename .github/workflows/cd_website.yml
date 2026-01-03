@@ -1,4 +1,4 @@
-name: 'GitHub Pages'
+name: '🖥️ GitHub Pages'
 on:
   push:
     branches:
@@ -37,6 +37,6 @@ jobs:
         uses: peaceiris/actions-gh-pages@v4
         with:
           allow_empty_commit: false
-          github_token: ${{ secrets.PAT }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: 'website'
           publish_dir: ./website/dist
