@@ -1,10 +1,10 @@
 {
   "include": ["src"],
   "compilerOptions": {
-    "target": "es2015",
-    "lib": ["es2015", "DOM"],
-    "module": "es2015",
-    "moduleResolution": "bundler",
+    "target": "es2018",
+    "lib": ["es2018", "DOM"],
+    "module": "commonjs",
+    "moduleResolution": "node",
     "outDir": "lib",
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
