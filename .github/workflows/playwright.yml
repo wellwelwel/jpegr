@@ -40,18 +40,18 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-browsers-${{ hashFiles('package-lock.json') }}
-          restore-keys: playwright-browsers-
+          key: playwright-browsers-${{ matrix.browser }}
+          restore-keys: playwright-browsers-${{ matrix.browser }}-
 
       - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+        run: npx playwright install --with-deps ${{ matrix.browser }}
 
       - name: Run Playwright tests
         run: npm test -- --project ${{ matrix.browser }}
 
-      # - uses: actions/upload-artifact@v4
-      #   if: ${{ !cancelled() }}
-      #   with:
-      #     name: playwright-report
-      #     path: playwright-report/
-      #     retention-days: 30
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30

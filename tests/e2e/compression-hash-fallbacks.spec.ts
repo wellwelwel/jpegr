@@ -12,7 +12,6 @@ export const FEATURES_TO_DISABLE = [
   'toBlob',
 ] as const;
 
-// Test each feature independently
 for (const featureName of FEATURES_TO_DISABLE) {
   test.describe(`Hash consistency (fallback mode: ${featureName} disabled)`, () => {
     test.beforeEach(async ({ page }) => {
