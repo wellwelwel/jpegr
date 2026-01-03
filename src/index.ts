@@ -115,6 +115,7 @@ export class JPGER {
 
         const result = await compressToFit(decoded, {
           maxSize,
+          originalSize,
           maxQuality: this.maxQuality,
           minQuality: this.minQuality,
           compressionStep: this.compressionStep,

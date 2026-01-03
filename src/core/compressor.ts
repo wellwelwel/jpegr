@@ -9,7 +9,9 @@ export const compressToFit = async (
   decoded: DecodedImage,
   options: CompressionOptions
 ): Promise<CompressionResult> => {
-  const { maxSize, maxQuality, minQuality, compressionStep } = options;
+  const { maxSize, originalSize, maxQuality, minQuality, compressionStep } =
+    options;
+  const effectiveMaxSize = Math.min(maxSize, originalSize);
 
   // First attempt at max quality
   let blob = await encodeToJpeg(decoded, maxQuality);
@@ -17,12 +19,12 @@ export const compressToFit = async (
   let wasCompressed = false;
 
   // Progressively reduce quality
-  if (blob.size >= maxSize) {
+  if (blob.size > effectiveMaxSize) {
     wasCompressed = true;
 
     let currentQuality = maxQuality - compressionStep;
 
-    while (blob.size >= maxSize && currentQuality > minQuality) {
+    while (blob.size > effectiveMaxSize && currentQuality > minQuality) {
       blob = await encodeToJpeg(decoded, currentQuality);
       finalQuality = currentQuality;
       currentQuality -= compressionStep;

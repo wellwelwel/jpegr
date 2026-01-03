@@ -59,6 +59,7 @@ export type CompressionResult = {
 
 export type CompressionOptions = {
   maxSize: number;
+  originalSize: number;
   maxQuality: number;
   minQuality: number;
   compressionStep: number;
