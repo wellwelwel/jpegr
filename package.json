@@ -50,5 +50,22 @@
   },
   "files": [
     "lib"
+  ],
+  "keywords": [
+    "image",
+    "jpeg",
+    "jpg",
+    "compression",
+    "compress",
+    "browser",
+    "canvas",
+    "resize",
+    "optimize",
+    "converter",
+    "client-side",
+    "file-upload",
+    "exif",
+    "quality",
+    "image-processing"
   ]
 }
