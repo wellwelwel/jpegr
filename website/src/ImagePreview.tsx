@@ -273,6 +273,22 @@ export const ImagePreview = () => {
                 </span>
               </div>
 
+              <div className='jpegr-k'>Blob</div>
+              <div className='jpegr-v'>
+                <span className={badgeClass(runtimeSupport.Blob)}>
+                  {runtimeSupport.Blob ? 'Supported' : 'Not supported'}
+                </span>
+              </div>
+
+              <div className='jpegr-k'>createObjectURL</div>
+              <div className='jpegr-v'>
+                <span className={badgeClass(runtimeSupport.createObjectURL)}>
+                  {runtimeSupport.createObjectURL
+                    ? 'Supported'
+                    : 'Not supported'}
+                </span>
+              </div>
+
               <div className='jpegr-k'>Canvas API</div>
               <div className='jpegr-v'>
                 <span className={badgeClass(canvasOutputStrategy)}>

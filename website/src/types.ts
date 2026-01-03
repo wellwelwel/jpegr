@@ -6,6 +6,8 @@ export type RuntimeSupport = Readonly<{
   HTMLCanvasElement: boolean;
   fileReader: boolean;
   createImageBitmap: boolean;
+  Blob: boolean;
+  createObjectURL: boolean;
 }>;
 
 export type JPGERPlaygroundViewModel = Readonly<{
@@ -28,7 +30,7 @@ export type JPGERPlaygroundViewModel = Readonly<{
 
   lastDebug: RunDebug | null;
 
-  // Fixed runtime info
+  // Runtime info
   runtimeSupport: RuntimeSupport;
   userAgent: string;
   canvasOutputStrategy: boolean;

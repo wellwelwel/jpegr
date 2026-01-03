@@ -43,6 +43,11 @@ export const getRuntimeSupport = (): RuntimeSupport => {
     HTMLCanvasElement: typeof HTMLCanvasElement !== 'undefined',
     fileReader: typeof FileReader !== 'undefined',
     createImageBitmap: typeof createImageBitmap !== 'undefined',
+    Blob: typeof Blob !== 'undefined',
+    createObjectURL:
+      typeof URL !== 'undefined' &&
+      typeof URL.createObjectURL === 'function' &&
+      typeof URL.revokeObjectURL === 'function',
   });
 };
 
