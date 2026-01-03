@@ -1,4 +1,4 @@
-import { RuntimeSupport } from './types.js';
+import type { RuntimeSupport } from './types.js';
 
 export const getRuntimeSupport = (): RuntimeSupport => {
   const canvasProto =
