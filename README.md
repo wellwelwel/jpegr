@@ -117,37 +117,6 @@ const jpegr = new JPGER({
 
 - The example above uses all the default options.
 
-#### `canProcess` _(static)_
-
-Returns whether the current browser supports image processing.
-
-```ts
-import { JPGER } from 'jpegr';
-
-JPGER.canProcess(); // true or false
-```
-
-#### `getRuntimeSupport` _(static)_
-
-Returns an object describing the current browser's support for image processing features.
-
-```ts
-import { JPGER } from 'jpegr';
-
-const support = JPGER.getRuntimeSupport();
-// {
-//   FileReader: true,
-//   Blob: true,
-//   File: true,
-//   HTMLCanvasElement: true,
-//   canvasToBlob: true,
-//   createObjectURL: true,
-//   createImageBitmap: true
-// }
-```
-
-**Use case:** Check feature availability before attempting image processing, or provide fallback UI for unsupported browsers.
-
 ---
 
 ### Methods
@@ -365,6 +334,39 @@ If some of these features are unavailable in the browser, the original image wil
 >   // ...
 > }
 > ```
+
+### Debugging
+
+#### `canProcess` _(static method)_
+
+Returns whether the current browser supports image processing.
+
+```ts
+import { JPGER } from 'jpegr';
+
+JPGER.canProcess(); // true or false
+```
+
+#### `getRuntimeSupport` _(static method)_
+
+Returns an object describing the current browser's support for image processing features.
+
+```ts
+import { JPGER } from 'jpegr';
+
+const support = JPGER.getRuntimeSupport();
+// {
+//   FileReader: true,
+//   Blob: true,
+//   File: true,
+//   HTMLCanvasElement: true,
+//   canvasToBlob: true,
+//   createObjectURL: true,
+//   createImageBitmap: true
+// }
+```
+
+**Use case:** Check feature availability before attempting image processing, or provide fallback UI for unsupported browsers.
 
 ---
 
