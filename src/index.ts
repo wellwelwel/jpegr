@@ -30,6 +30,13 @@ export class JPGER {
     return getRuntimeSupport();
   }
 
+  /**
+   * Returns whether the current browser supports image processing.
+   */
+  static canProcess(): boolean {
+    return supportsImageProcessing();
+  }
+
   private processedImage: ProcessedImage | null = null;
   private previewElement: HTMLImageElement | null = null;
 

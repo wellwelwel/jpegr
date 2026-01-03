@@ -23,9 +23,8 @@ A browser module to take **all image formats** supported by `HTMLCanvasElement` 
   - [JavaScript and TypeScript](#javascript-and-typescript)
     - [Upload to a backend endpoint](#upload-to-a-backend-endpoint)
   - [React](#%EF%B8%8F-react)
-- [Browser support](#browser-support)
 - [Troubleshooting](#troubleshooting)
-- [Considerations](#considerations)
+  - [Browser support](#browser-support)
 - [Security notes](#security-notes)
 - [License](#license)
 
@@ -118,6 +117,16 @@ const jpegr = new JPGER({
 
 - The example above uses all the default options.
 
+#### `canProcess` _(static)_
+
+Returns whether the current browser supports image processing.
+
+```ts
+import { JPGER } from 'jpegr';
+
+JPGER.canProcess(); // true or false
+```
+
 #### `getRuntimeSupport` _(static)_
 
 Returns an object describing the current browser's support for image processing features.
@@ -129,6 +138,7 @@ const support = JPGER.getRuntimeSupport();
 // {
 //   FileReader: true,
 //   Blob: true,
+//   File: true,
 //   HTMLCanvasElement: true,
 //   canvasToBlob: true,
 //   createObjectURL: true,
@@ -332,21 +342,29 @@ export const ImagePreview = () => {
 
 ---
 
-## Browser support
+## Troubleshooting
+
+### Browser support
 
 This module requires standard browser APIs:
 
 - `FileReader`
 - `HTMLCanvasElement`
-- `Blob` or `ArrayBuffer`, `Uint8Array`, and `atob`
+- `Blob` or `File`
 
----
+If some of these features are unavailable in the browser, the original image will be used, regardless of size or type.
 
-## Troubleshooting
-
-### “Canvas not supported”
-
-The browser does not provide a 2D canvas context (`canvas.getContext('2d')` returned `null`). This can happen in very old browsers or restricted environments.
+> [!TIP]
+>
+> If you need to prevent this behavior, you can use the static method `JPGER.getRuntimeSupport()` to check for support before attempting image processing, for example:
+>
+> ```ts
+> import { JPGER } from 'jpegr';
+>
+> if (!JPGER.canProcess()) {
+>   // ...
+> }
+> ```
 
 ---
 

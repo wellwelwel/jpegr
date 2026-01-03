@@ -75,11 +75,13 @@ export type PreviewSource = Readonly<{
  */
 export type RuntimeSupport = Readonly<{
   /** Fallback availabe: ❌ */
-  FileReader: boolean;
-  /** Fallback availabe: ❌ */
-  Blob: boolean;
-  /** Fallback availabe: ❌ */
   HTMLCanvasElement: boolean;
+  /** Fallback availabe: ❌ */
+  FileReader: boolean;
+  /** Fallback availabe: File required */
+  Blob: boolean;
+  /** Fallback availabe: Blob required */
+  File: boolean;
   /** Fallback availabe: ✅ */
   canvasToBlob: boolean;
   /** Fallback availabe: ✅ */

@@ -4,7 +4,11 @@ import { getRuntimeSupport } from './runtime.js';
 export const supportsImageProcessing = (): boolean => {
   const supports = getRuntimeSupport();
 
-  return supports.FileReader && supports.Blob && supports.HTMLCanvasElement;
+  return (
+    supports.FileReader &&
+    supports.HTMLCanvasElement &&
+    (supports.Blob || supports.File)
+  );
 };
 
 export const processDataUrl = (
