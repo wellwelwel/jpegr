@@ -6,7 +6,7 @@ import { defineConfig } from 'vite';
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: './jpegr',
+  base: '/jpegr/',
   css: {
     postcss: {
       plugins: [autoprefixer, cssnano],
