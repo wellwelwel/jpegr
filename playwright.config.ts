@@ -10,7 +10,7 @@ export default defineConfig({
   forbidOnly: !!env.CI,
   retries: env.CI ? 2 : 0,
   workers: env.CI ? 1 : undefined,
-  reporter: env.CI ? 'github' : 'html',
+  reporter: 'html',
   globalSetup: './tests/global.setup.ts',
   use: {
     baseURL: 'http://localhost:5173',
