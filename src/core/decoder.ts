@@ -1,18 +1,5 @@
 import type { DecodedImage } from './types.js';
-
-const fileToDataUrl = (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      typeof reader.result === 'string'
-        ? resolve(reader.result)
-        : reject(new Error('Failed to read file'));
-    };
-    reader.onerror = () => reject(reader.error);
-    reader.readAsDataURL(file);
-  });
-};
+import { processDataUrl } from './utils.js';
 
 const loadImage = (src: string): Promise<HTMLImageElement> => {
   return new Promise((resolve, reject) => {
@@ -41,7 +28,7 @@ export const decodeImage = async (file: File): Promise<DecodedImage> => {
   }
 
   // Fallback
-  const dataUrl = await fileToDataUrl(file);
+  const dataUrl = await processDataUrl(file, 'Failed to read file');
   const image = await loadImage(dataUrl);
 
   return {

@@ -6,7 +6,11 @@ import type {
 } from './core/types.js';
 import { compressToFit } from './core/compressor.js';
 import { decodeImage } from './core/decoder.js';
-import { blobToDataUrl, formatBytes } from './core/utils.js';
+import {
+  buildPreviewSrc,
+  formatBytes,
+  supportsImageProcessing,
+} from './core/utils.js';
 
 const DEFAULT_MAX_SIZE = 1024 * 1024; // 1 MB
 const DEFAULT_QUALITY = 1;
@@ -64,6 +68,7 @@ export class JPGER {
   }
 
   clear(): void {
+    this.processedImage?.revoke?.();
     this.processedImage = null;
     this.syncPreview();
   }
@@ -86,20 +91,22 @@ export class JPGER {
     let decoded = null;
 
     try {
+      const canProcess = supportsImageProcessing();
       const originalSize = file.size;
       const originalType = file.type;
-
-      // Fast path: JPEG within size limit
-      const isJpegWithinLimit =
-        file.type === 'image/jpeg' && file.size <= maxSize;
 
       let blob: Blob;
       let wasConverted = false;
       let wasCompressed = false;
       let finalQuality = this.maxQuality;
 
-      if (isJpegWithinLimit) {
+      // Fast path: JPEG within size limit OR browser doesn't support processing
+      const isJpegWithinLimit =
+        file.type === 'image/jpeg' && file.size <= maxSize;
+
+      if (isJpegWithinLimit || !canProcess) {
         // Pass through original file
+        // Use original on unsupported browsers
         blob = file;
       } else {
         // Decode and compress
@@ -118,11 +125,12 @@ export class JPGER {
         finalQuality = result.finalQuality;
       }
 
-      const dataUrl = await blobToDataUrl(blob);
+      this.processedImage?.revoke?.();
 
+      const previewSrc = await buildPreviewSrc(blob);
       const processed: ProcessedImage = Object.freeze({
         blob,
-        dataUrl,
+        dataUrl: previewSrc.src,
         metadata: Object.freeze({
           originalSize,
           originalType,
@@ -131,6 +139,7 @@ export class JPGER {
           wasCompressed,
           compressionQuality: finalQuality,
         }),
+        revoke: previewSrc.revoke,
       });
 
       this.processedImage = processed;

@@ -17,6 +17,8 @@ export type ProcessedImage = Readonly<{
   blob: Blob;
   dataUrl: string;
   metadata: ProcessedImageMetadata;
+  /** Optional function to revoke Object URLs and free memory */
+  revoke?: () => void;
 }>;
 
 /**
@@ -61,3 +63,8 @@ export type CompressionOptions = {
   minQuality: number;
   compressionStep: number;
 };
+
+export type PreviewSource = Readonly<{
+  src: string;
+  revoke?: () => void;
+}>;
