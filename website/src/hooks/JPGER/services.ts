@@ -33,7 +33,10 @@ export const RUNTIME_SUPPORT = JPGER.getRuntimeSupport();
 
 export const getUserAgent = (): string => {
   if (typeof navigator === 'undefined') return 'N/A';
-  return navigator.userAgent || 'N/A';
+
+  return typeof navigator.userAgent === 'string'
+    ? navigator.userAgent.trim() || 'N/A'
+    : 'N/A';
 };
 
 export const getCanvasOutputStrategy = (support: RuntimeSupport): boolean =>

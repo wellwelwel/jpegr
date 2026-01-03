@@ -71,7 +71,7 @@ export type PreviewSource = Readonly<{
 }>;
 
 /**
- * **Note:** When a fallback is not available, **JPEGR** uses the original image.
+ * **Note:** When a fallback is not available, **JPEGR** will use the original image.
  */
 export type RuntimeSupport = Readonly<{
   /** Fallback availabe: ❌ */
