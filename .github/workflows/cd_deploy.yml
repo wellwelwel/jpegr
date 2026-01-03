@@ -1,4 +1,4 @@
-name: '🚀 CD (Website) — Publish'
+name: '🚀 CD — Publish'
 
 on:
   push:
@@ -48,7 +48,7 @@ jobs:
         with:
           token: ${{ secrets.PAT }}
           release-type: node
-          package-name: countty
+          package-name: jpegr
           changelog-path: 'CHANGELOG.md'
 
       - name: Publishing Package
