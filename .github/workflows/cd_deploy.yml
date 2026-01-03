@@ -1,0 +1,58 @@
+name: '🚀 CD (Website) — Publish'
+
+on:
+  push:
+    branches:
+      - 'main'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: ${{ github.event.repository.fork == false && github.ref == 'refs/heads/main' }}
+    name: Deploy
+    steps:
+      - name: Actions - Checkout
+        uses: actions/checkout@v4
+
+      - name: Actions - Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          registry-url: 'https://registry.npmjs.org'
+          always-auth: true
+
+      - name: Cache Dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ hashFiles('package-lock.json') }}
+          restore-keys: npm-
+
+      - name: Installing Dependencies
+        run: npm ci
+
+      - name: Building
+        run: npm run build
+
+      - name: Releasing
+        if: ${{ github.event.repository.fork == false }}
+        uses: google-github-actions/release-please-action@v3
+        id: release
+        with:
+          token: ${{ secrets.PAT }}
+          release-type: node
+          package-name: countty
+          changelog-path: 'CHANGELOG.md'
+
+      - name: Publishing Package
+        if: ${{ steps.release.outputs.releases_created }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --provenance --access public
