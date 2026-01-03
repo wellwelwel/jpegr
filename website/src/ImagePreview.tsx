@@ -280,6 +280,13 @@ export const ImagePreview = () => {
                 </span>
               </div>
 
+              <div className='jpegr-k'>File</div>
+              <div className='jpegr-v'>
+                <span className={badgeClass(runtimeSupport.File)}>
+                  {runtimeSupport.File ? 'Supported' : 'Not supported'}
+                </span>
+              </div>
+
               <div className='jpegr-k'>createObjectURL</div>
               <div className='jpegr-v'>
                 <span className={badgeClass(runtimeSupport.createObjectURL)}>

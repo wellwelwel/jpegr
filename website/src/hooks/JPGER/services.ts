@@ -85,5 +85,7 @@ export const validateJPGEROptions = (
 };
 
 export const revokeObjectUrl = (url: string | null): void => {
-  if (url) URL.revokeObjectURL(url);
+  try {
+    if (url) URL.revokeObjectURL(url);
+  } catch (error) {}
 };

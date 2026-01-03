@@ -5,7 +5,7 @@ import type {
 } from '../../../../src/core/types.js';
 import type { JPGERPlaygroundViewModel, RunDebug } from '../../types.js';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { formatBytes } from '../../../../src/core/utils.js';
+import { buildPreviewSrc, formatBytes } from '../../../../src/core/utils.js';
 import { JPGER } from '../../../../src/index.js';
 import {
   buildJPGEROptions,
@@ -98,9 +98,10 @@ export const usePlayground = (): JPGERPlaygroundViewModel => {
     const durationMs = Math.round(performance.now() - start);
 
     if (result.success) {
+      const processedPreview = await buildPreviewSrc(result.image.blob);
       setProcessedObjectUrl((prev) => {
         revokeObjectUrl(prev);
-        return URL.createObjectURL(result.image.blob);
+        return processedPreview.src;
       });
 
       setLastDebug({
@@ -165,9 +166,10 @@ export const usePlayground = (): JPGERPlaygroundViewModel => {
     setLastDebug(null);
     setSelectedFile(file);
 
+    const originalPreview = await buildPreviewSrc(file);
     setOriginalObjectUrl((prev) => {
       revokeObjectUrl(prev);
-      return URL.createObjectURL(file);
+      return originalPreview.src;
     });
 
     setProcessedObjectUrl((prev) => {
