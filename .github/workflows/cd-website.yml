@@ -39,4 +39,4 @@ jobs:
           allow_empty_commit: false
           github_token: ${{ secrets.PAT }}
           publish_branch: 'website'
-          publish_dir: ./website/build
+          publish_dir: ./website/dist
