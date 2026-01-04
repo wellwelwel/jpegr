@@ -31,11 +31,11 @@ A browser module to take **all image formats** supported by `HTMLCanvasElement` 
 
 ## Key features
 
-- Uses the original image when both format and size are within expectations.
-- Normalizes **EXIF** orientation for **JPEG** inputs _(common "bug" in smartphone photos)_.
-- Automatic compression starting from a chosen initial quality with granular steps.
 - Auto preview and easy upload to backend endpoints.
-- Extensive fallback support for older and lite browsers.
+- Comprehensive fallback support for legacy and _lite_ browsers.
+- Uses the original image when both format and size are within expectations.
+- Automatic compression starting from a chosen initial quality with granular steps.
+- Normalizes **EXIF** orientation for **JPEG** inputs _(common "bug" in smartphone photos)_.
 
 ---
 
