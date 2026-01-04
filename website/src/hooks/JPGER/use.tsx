@@ -97,7 +97,7 @@ export const usePlayground = (): JPGERPlaygroundViewModel => {
     const start = performance.now();
     const startedAtIso = new Date().toISOString();
 
-    const result: ProcessResult = await jpegr.fromFile(file);
+    const result: ProcessResult = await jpegr.process(file);
     const durationMs = Math.round(performance.now() - start);
 
     if (result.success) {

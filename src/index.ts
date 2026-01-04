@@ -63,7 +63,26 @@ export class JPGER {
     this.syncPreview();
   }
 
-  async fromInput(
+  /**
+   * Processes an image from either a File or an HTMLInputElement.
+   */
+  async process(
+    input: File | Blob | HTMLInputElement,
+    maxSize = this.maxSize
+  ): Promise<ProcessResult> {
+    if (input instanceof HTMLInputElement)
+      return this.fromInput(input, maxSize);
+
+    if (
+      (supports.File && input instanceof File) ||
+      (supports.Blob && input instanceof Blob)
+    )
+      return this.fromFile(input, maxSize);
+
+    throw new Error('Invalid input type. Expected File or HTMLInputElement.');
+  }
+
+  private async fromInput(
     input: HTMLInputElement,
     maxSize = this.maxSize
   ): Promise<ProcessResult> {
@@ -77,7 +96,10 @@ export class JPGER {
     return this.fromFile(file, maxSize);
   }
 
-  async fromFile(file: File, maxSize = this.maxSize): Promise<ProcessResult> {
+  private async fromFile(
+    file: File | Blob,
+    maxSize = this.maxSize
+  ): Promise<ProcessResult> {
     let decoded = null;
 
     try {

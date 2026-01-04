@@ -65,30 +65,9 @@ const jpegr = new JPGER({
 });
 
 input.addEventListener('change', async () => {
-  await jpegr.fromInput(input);
-});
-```
+  const result = await jpegr.process(input);
 
-#### From File
-
-```ts
-import { JPGER } from 'jpegr';
-
-const input = document.querySelector<HTMLInputElement>('#file')!;
-const jpegr = new JPGER({
-  preview: document.querySelector<HTMLImageElement>('#preview'),
-});
-
-input.addEventListener('change', async () => {
-  const file = input.files?.[0];
-  if (!file) {
-    console.error('No file selected.');
-    jpegr.clear();
-
-    return;
-  }
-
-  await jpegr.fromFile(file);
+  console.log(result);
 });
 ```
 
@@ -120,20 +99,12 @@ const jpegr = new JPGER({
 
 ### Methods
 
-#### `fromInput`
+#### `process`
 
-Processes an image `File` in an `<input type="file">` and stores the result in memory on success.
-
-```ts
-const result = await jpegr.fromInput(inputElement, 1024 * 1024);
-```
-
-#### `fromFile`
-
-Processes an image `File` and stores the result in memory on success.
+Processes an `HTMLInputElement` _(`<input type="file">`)_ or an image `File | Blob`.
 
 ```ts
-const result = await jpegr.fromFile(file, 1024 * 1024);
+const result = await jpegr.process(inputElement);
 ```
 
 #### `upload`
@@ -187,7 +158,7 @@ const jpegr = new JPGER({
 });
 
 input.addEventListener('change', async () => {
-  const result = await jpegr.fromInput(input);
+  const result = await jpegr.process(input);
 
   if (!result.success) {
     console.error(result.error);
@@ -207,7 +178,7 @@ import { JPGER } from 'jpegr';
 
 const jpegr = new JPGER();
 
-const result = await jpegr.fromFile(file, 1 * 1024 * 1024);
+const result = await jpegr.process(file);
 if (!result.success) throw new Error(result.error);
 
 await jpegr.upload('/api/upload', {
@@ -237,7 +208,7 @@ export const ImagePreview = () => {
     const input = inputRef.current;
     if (!input) return;
 
-    const result = await jpegrRef.current.fromInput(input);
+    const result = await jpegrRef.current.process(input);
     if (!result.success) {
       jpegrRef.current.clear();
       setState({ status: 'error', message: result.error });
