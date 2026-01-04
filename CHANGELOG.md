@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/wellwelwel/jpegr/compare/v2.0.0...v2.1.0) (2026-01-04)
+
+
+### Features
+
+* add fallbacks for `FileReader` and `Uint8Array` ([#5](https://github.com/wellwelwel/jpegr/issues/5)) ([44adcb3](https://github.com/wellwelwel/jpegr/commit/44adcb3c65e6de06bb46aac33e002edf4deb8891))
+
 ## [2.0.0](https://github.com/wellwelwel/jpegr/compare/v1.1.0...v2.0.0) (2026-01-04)
 
 
