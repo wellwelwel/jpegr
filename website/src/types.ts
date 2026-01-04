@@ -15,8 +15,8 @@ export type JPGERPlaygroundViewModel = {
   compressionStep: number;
   minQuality: number;
 
-  selectedFile: File | null;
-  originalObjectUrl: string | null;
+  selectedFile: File | Blob | null;
+  objectUrl: string | null;
   processedObjectUrl: string | null;
 
   lastDebug: RunDebug | null;
@@ -70,4 +70,11 @@ export type RunDebug = {
     processedBlobSize: number | null;
     processedDataUrlLength: number | null;
   };
+};
+
+export type Status = {
+  isBusy: boolean;
+  error: string | null;
+  info: string | null;
+  lastDebug: RunDebug | null;
 };

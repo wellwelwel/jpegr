@@ -26,7 +26,7 @@ export const ImagePreview = () => {
     onProcess,
     onReset,
     onSelectFile,
-    originalObjectUrl,
+    objectUrl,
     originalSizeText,
     processedObjectUrl,
     fileSizeText,
@@ -105,10 +105,10 @@ export const ImagePreview = () => {
                 <span className='jpegr-smallHint'>{originalSizeText}</span>
               </div>
 
-              {originalObjectUrl ? (
+              {objectUrl ? (
                 <img
                   className='jpegr-img'
-                  src={originalObjectUrl}
+                  src={objectUrl}
                   alt='Original preview'
                 />
               ) : (
