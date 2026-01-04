@@ -69,6 +69,8 @@
     "file-upload",
     "exif",
     "quality",
-    "image-processing"
+    "image-processing",
+    "jpeg-encoder",
+    "jpeg-decoder"
   ]
 }
