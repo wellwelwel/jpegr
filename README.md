@@ -151,6 +151,8 @@ jpegr.clear();
 
 ### Vanilla JS 🍦
 
+> → [**See the functional example**](./examples/vanilla-js/).
+
 ```html
 <input id="file" type="file" accept="image/*" />
 <img id="preview" width="100%" />
@@ -175,6 +177,8 @@ input.addEventListener('change', async () => {
 ```
 
 ### React ⚛️
+
+> → [**See the functional example**](./examples/vite/).
 
 ```tsx
 import type { ProcessResult } from 'jpegr';
