@@ -1,8 +1,5 @@
 import type { ChangeEvent } from 'react';
-import type {
-  JPGEROptions,
-  ProcessResult,
-} from '../../../../src/core/types.js';
+import type { JPGEROptions, ProcessResult } from '../../../../src/index.js';
 import type { JPGERPlaygroundViewModel, RunDebug } from '../../types.js';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { buildPreviewSrc, formatBytes } from '../../../../src/core/utils.js';
@@ -103,7 +100,7 @@ export const usePlayground = (): JPGERPlaygroundViewModel => {
     if (result.success) {
       setProcessedResult(result);
 
-      const processedPreview = await buildPreviewSrc(result.image.file);
+      const processedPreview = await buildPreviewSrc(result.image!.file);
       setProcessedObjectUrl((prev) => {
         revokeObjectUrl(prev);
         return processedPreview.src;
@@ -124,10 +121,10 @@ export const usePlayground = (): JPGERPlaygroundViewModel => {
         output: {
           success: true,
           error: null,
-          metadata: result.image.metadata.processed,
-          processedBlobType: result.image.file.type,
-          processedBlobSize: result.image.file.size,
-          processedDataUrlLength: result.image.src.length,
+          metadata: result.image!.metadata.processed,
+          processedBlobType: result.image!.file.type,
+          processedBlobSize: result.image!.file.size,
+          processedDataUrlLength: result.image!.src.length,
         },
       });
     } else {
@@ -147,7 +144,7 @@ export const usePlayground = (): JPGERPlaygroundViewModel => {
         },
         output: {
           success: false,
-          error: result.error,
+          error: result.error!,
           metadata: null,
           processedBlobType: null,
           processedBlobSize: null,
@@ -155,7 +152,7 @@ export const usePlayground = (): JPGERPlaygroundViewModel => {
         },
       });
 
-      setError(result.error);
+      setError(result.error!);
     }
 
     setIsBusy(false);
@@ -219,11 +216,11 @@ export const usePlayground = (): JPGERPlaygroundViewModel => {
   const originalSizeText = selectedFile ? formatBytes(selectedFile.size) : '';
   const effectiveMaxSizeText = formatBytes(effectiveMaxSizeBytes);
   const finalSizeText = hasProcessed
-    ? (processedResult.image.metadata.processed?.sizeFormatted ?? '—')
+    ? (processedResult.image!.metadata.processed?.sizeFormatted ?? '—')
     : '—';
 
   const fileSizeText = hasProcessed
-    ? formatBytes(processedResult.image.file.size)
+    ? formatBytes(processedResult.image!.file.size)
     : '';
 
   const resultText = isBusy
@@ -235,17 +232,17 @@ export const usePlayground = (): JPGERPlaygroundViewModel => {
         : 'Select a file';
 
   const convertedText = hasProcessed
-    ? processedResult.image.metadata.processed?.converted
+    ? processedResult.image!.metadata.processed?.converted
       ? 'Yes'
       : 'No'
     : '—';
   const compressedText = hasProcessed
-    ? processedResult.image.metadata.processed?.compressed
+    ? processedResult.image!.metadata.processed?.compressed
       ? 'Yes'
       : 'No'
     : '—';
   const finalQualityText = hasProcessed
-    ? processedResult.image.metadata.processed?.quality.toFixed(2) || '—'
+    ? processedResult.image!.metadata.processed?.quality.toFixed(2) || '—'
     : '—';
 
   const onDefaultMaxSizeMbChange = (event: ChangeEvent<HTMLInputElement>) => {

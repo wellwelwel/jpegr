@@ -30,9 +30,11 @@ export type ProcessedImage = {
 /**
  * Result of image processing operation
  */
-export type ProcessResult =
-  | { success: true; image: ProcessedImage }
-  | { success: false; error: string };
+export type ProcessResult = {
+  success: boolean;
+  error?: string;
+  image?: ProcessedImage;
+};
 
 /**
  * Configuration options for JPGER

@@ -1,7 +1,4 @@
-import type {
-  JPGEROptions,
-  RuntimeSupport,
-} from '../../../../src/core/types.js';
+import type { JPGEROptions, RuntimeSupport } from '../../../../src/index.js';
 import { JPGER } from '../../../../src/index.js';
 
 const BYTES_IN_KIB = 1024;
