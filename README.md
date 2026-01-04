@@ -250,7 +250,7 @@ export default () => {
 
 > [!TIP]
 >
-> If critical features are unavailable, you can use the static method `JPGER.getRuntimeSupport()` to check for **JPEGR** support before attempting image processing, for example:
+> If critical features are unavailable, you can use the static method `JPGER.canProcess()` to check for **JPEGR** support before attempting image processing, for example:
 >
 > ```ts
 > import { JPGER } from 'jpegr';
