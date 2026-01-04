@@ -26,7 +26,7 @@
     "test": "playwright test",
     "test:debug": "playwright test --debug",
     "test:report": "playwright show-report",
-    "dev": "cd website && npm start",
+    "dev": "npm start --prefix website",
     "lint": "prettier --check .",
     "lint:fix": "prettier --write .github/workflows/*.yml ."
   },
