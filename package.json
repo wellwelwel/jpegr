@@ -21,20 +21,22 @@
   },
   "scripts": {
     "build:cjs": "tsc",
-    "build:esm": "esbuild src/index.ts --outfile=lib/index.mjs --platform=node --target=node12 --format=esm --bundle",
+    "build:esm": "esbuild src/index.ts --outfile=lib/index.mjs --platform=browser --target=es2018 --format=esm --bundle",
     "build": "rm -rf ./lib && npm run build:cjs && npm run build:esm",
     "test": "playwright test",
     "test:debug": "playwright test --debug",
     "test:report": "playwright show-report",
     "dev": "npm start --prefix website",
     "lint": "prettier --check .",
-    "lint:fix": "prettier --write .github/workflows/*.yml ."
+    "lint:fix": "prettier --write .github/workflows/*.yml .",
+    "update": "pu && npm i && npm update && (npm audit fix || true) && npm run lint:fix"
   },
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "^4.7.0",
     "@playwright/test": "^1.57.0",
     "@types/node": "^25.0.3",
     "esbuild": "^0.27.2",
+    "packages-update": "^2.0.0",
     "playwright": "^1.57.0",
     "prettier": "^3.7.4",
     "typescript": "^5.9.3"
