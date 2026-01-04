@@ -248,11 +248,9 @@ export default () => {
 - `Uint8Array` → falls back to `DataView`
 - `createImageBitmap` and `URL.createObjectURL` → falls back to `FileReader` → falls back to `Response` API
 
-If critical features are unavailable, **JPEGR** will use the original image without processing and `preview` will not be available.
-
 > [!TIP]
 >
-> If you need to prevent this behavior, you can use the static method `JPGER.getRuntimeSupport()` to check for **JPEGR** support before attempting image processing, for example:
+> If critical features are unavailable, you can use the static method `JPGER.getRuntimeSupport()` to check for **JPEGR** support before attempting image processing, for example:
 >
 > ```ts
 > import { JPGER } from 'jpegr';
@@ -278,7 +276,10 @@ const support = JPGER.getRuntimeSupport();
  *   HTMLCanvasElement: true,
  *   canvasToBlob: true,
  *   createObjectURL: true,
- *   createImageBitmap: true
+ *   createImageBitmap: true,
+ *   Response: true,
+ *   Uint8Array: true,
+ *   DataView: true
  * }
  */
 ```
