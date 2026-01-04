@@ -19,9 +19,6 @@ A browser module to take **all image formats** supported by `HTMLCanvasElement` 
   - [Methods](#methods)
   - [Types](#types)
 - [Examples](#examples)
-  - [JavaScript](#javascript)
-    - [Upload to a backend endpoint](#upload-to-a-backend-endpoint)
-  - [React](#react)
 - [Troubleshooting](#troubleshooting)
   - [Browser support](#browser-support)
   - [Debugging](#debugging)
@@ -152,21 +149,20 @@ jpegr.clear();
 
 ## Examples
 
-### JavaScript
+### Vanilla JS 🍦
 
 ```html
 <input id="file" type="file" accept="image/*" />
-<hr />
 <img id="preview" width="100%" />
+<script type="module" src="./main.mjs"></script>
 ```
 
 ```ts
-import { JPGER } from 'jpegr';
+import { JPGER } from 'https://cdn.jsdelivr.net/npm/jpegr@latest/lib/index.mjs';
 
 const input = document.querySelector('#file');
-const jpegr = new JPGER({
-  preview: document.querySelector('#preview'),
-});
+const preview = document.querySelector('#preview');
+const jpegr = new JPGER({ preview });
 
 input.addEventListener('change', async () => {
   const result = await jpegr.process(input);
@@ -174,31 +170,11 @@ input.addEventListener('change', async () => {
   if (!result.success) {
     console.error(result.error);
     jpegr.clear();
-    return;
   }
-
-  const { metadata } = result.image;
-  console.info(metadata);
 });
 ```
 
-#### Upload to a backend endpoint
-
-```ts
-import { JPGER } from 'jpegr';
-
-const jpegr = new JPGER();
-
-const result = await jpegr.process(file);
-if (!result.success) throw new Error(result.error);
-
-await jpegr.upload('/api/upload', {
-  field: 'image',
-  name: `image.jpeg`,
-});
-```
-
-### React
+### React ⚛️
 
 ```tsx
 import type { ProcessResult } from 'jpegr';
@@ -223,7 +199,6 @@ export default () => {
       {result?.image && (
         <img src={result.image.src} alt='Selected image preview' />
       )}
-      <pre>{JSON.stringify(result, null, 2)}</pre>
     </>
   );
 };
