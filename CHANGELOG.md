@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/wellwelwel/jpegr/compare/v1.1.0...v2.0.0) (2026-01-04)
+
+
+### ⚠ BREAKING CHANGES
+
+* simplify JPEGR developer experience ([#3](https://github.com/wellwelwel/jpegr/issues/3))
+
+### Code Refactoring
+
+* simplify JPEGR developer experience ([#3](https://github.com/wellwelwel/jpegr/issues/3)) ([5c61a3c](https://github.com/wellwelwel/jpegr/commit/5c61a3c78de584cf3186b5cba43b1ed258d167c1))
+
 ## [1.1.0](https://github.com/wellwelwel/jpegr/compare/v1.0.0...v1.1.0) (2026-01-03)
 
 
