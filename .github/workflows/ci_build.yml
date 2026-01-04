@@ -34,3 +34,6 @@ jobs:
 
       - name: Build JPEGR
         run: npm run build
+
+      - name: Build Website
+        run: cd website && npm run build
