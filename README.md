@@ -252,7 +252,7 @@ If some of these features are unavailable in the browser, the original image wil
 
 > [!TIP]
 >
-> If you need to prevent this behavior, you can use the static method `JPGER.getRuntimeSupport()` to check for support before attempting image processing, for example:
+> If you need to prevent this behavior, you can use the static method `JPGER.getRuntimeSupport()` to check for **JPEGR** support before attempting image processing, for example:
 >
 > ```ts
 > import { JPGER } from 'jpegr';
@@ -264,7 +264,7 @@ If some of these features are unavailable in the browser, the original image wil
 
 ### Debugging
 
-Check feature availability before attempting image processing, or provide fallback UI for unsupported browsers:
+Check feature availability in browsers:
 
 ```ts
 import { JPGER } from 'jpegr';
