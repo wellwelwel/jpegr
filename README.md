@@ -24,6 +24,7 @@ A browser module to take **all image formats** supported by `HTMLCanvasElement` 
   - [React](#%EF%B8%8F-react)
 - [Troubleshooting](#troubleshooting)
   - [Browser support](#browser-support)
+  - [Debugging](#debugging)
 - [Security notes](#security-notes)
 - [License](#license)
 
@@ -190,57 +191,50 @@ await jpegr.upload('/api/upload', {
 ### React
 
 ```tsx
+import type { ProcessResult } from 'jpegr';
 import type { ChangeEvent } from 'react';
 import { JPGER } from 'jpegr';
 import { useRef, useState } from 'react';
 
-type State =
-  | { status: 'idle' }
-  | { status: 'error'; message: string }
-  | { status: 'ready'; previewUrl: string; sizeLabel: string };
-
 export const ImagePreview = () => {
-  const [state, setState] = useState<State>({ status: 'idle' });
-  const jpegrRef = useRef(new JPGER({ maxQuality: 0.9 }));
-  const inputRef = useRef<HTMLInputElement>(null);
+  const { current: jpegr } = useRef(new JPGER());
+  const [state, setState] = useState<ProcessResult | null>(null);
 
-  const onChange = async (_event: ChangeEvent<HTMLInputElement>) => {
-    const input = inputRef.current;
-    if (!input) return;
+  const onChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const input = event.currentTarget;
+    const result = await jpegr.process(input);
 
-    const result = await jpegrRef.current.process(input);
     if (!result.success) {
-      jpegrRef.current.clear();
-      setState({ status: 'error', message: result.error });
+      jpegr.clear();
+      setState(result);
       return;
     }
 
-    setState({
-      status: 'ready',
-      previewUrl: result.image.dataUrl,
-      sizeLabel: jpegrRef.current.fileSizeFormatted,
-    });
+    setState(result);
   };
 
   return (
-    <div style={{ display: 'grid', gap: 12, maxWidth: 420 }}>
-      <input ref={inputRef} type='file' accept='image/*' onChange={onChange} />
-
-      {state.status === 'error' ? <p role='alert'>{state.message}</p> : null}
-
-      {state.status === 'ready' ? (
-        <img
-          src={state.previewUrl}
-          alt='Selected image preview'
-          style={{ width: '100%', borderRadius: 8 }}
-        />
+    <>
+      <input type='file' accept='image/*' onChange={onChange} />
+      <hr />
+      {state?.error ? <p role='alert'>{state.error}</p> : null}
+      {state?.success && state.image ? (
+        <>
+          <img src={state.image.src} alt='Selected image preview' />
+          <hr />
+          <pre>{JSON.stringify(state.image.metadata, null, 2)}</pre>
+        </>
       ) : null}
-
-      {state.status === 'ready' ? <p>{state.sizeLabel}</p> : null}
-    </div>
+    </>
   );
 };
 ```
+
+#### Overview
+
+<img src="./.github/assets/sample.png" alt="React example overview" width="360" />
+
+- Check this example in [**./examples/vite**](./examples/vite/).
 
 ---
 
@@ -270,36 +264,24 @@ If some of these features are unavailable in the browser, the original image wil
 
 ### Debugging
 
-#### `canProcess` _(static method)_
-
-Returns whether the current browser supports image processing.
-
-```ts
-import { JPGER } from 'jpegr';
-
-JPGER.canProcess(); // true or false
-```
-
-#### `getRuntimeSupport` _(static method)_
-
-Returns an object describing the current browser's support for image processing features.
+Check feature availability before attempting image processing, or provide fallback UI for unsupported browsers:
 
 ```ts
 import { JPGER } from 'jpegr';
 
 const support = JPGER.getRuntimeSupport();
-// {
-//   FileReader: true,
-//   Blob: true,
-//   File: true,
-//   HTMLCanvasElement: true,
-//   canvasToBlob: true,
-//   createObjectURL: true,
-//   createImageBitmap: true
-// }
+/**
+ * {
+ *   FileReader: true,
+ *   Blob: true,
+ *   File: true,
+ *   HTMLCanvasElement: true,
+ *   canvasToBlob: true,
+ *   createObjectURL: true,
+ *   createImageBitmap: true
+ * }
+ */
 ```
-
-**Use case:** Check feature availability before attempting image processing, or provide fallback UI for unsupported browsers.
 
 ---
 
