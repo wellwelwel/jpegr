@@ -55,17 +55,15 @@ export const buildPreviewSrc = async (
   }
 
   if (supports.FileReader) {
-    if (supports.Blob && source instanceof Blob) {
+    if (supports.Blob)
       return {
         src: await processDataUrl(source, 'Failed to convert blob'),
       };
-    }
 
-    if (supports.File && source instanceof File) {
+    if (supports.File)
       return {
         src: await processDataUrl(source, 'Failed to read file'),
       };
-    }
   }
 
   if (supports.Response) {
