@@ -257,10 +257,19 @@ export const ImagePreview = () => {
                 </span>
               </div>
 
-              <div className='jpegr-k'>FileReader</div>
+              <div className='jpegr-k'>Blob</div>
               <div className='jpegr-v'>
-                <span className={badgeClass(runtimeSupport.FileReader)}>
-                  {runtimeSupport.FileReader ? 'Supported' : 'Not supported'}
+                <span className={badgeClass(runtimeSupport.Blob)}>
+                  {runtimeSupport.Blob ? 'Supported' : 'Not supported'}
+                </span>
+              </div>
+
+              <div className='jpegr-k'>
+                File <em>(fallback)</em>
+              </div>
+              <div className='jpegr-v'>
+                <span className={badgeClass(runtimeSupport.File)}>
+                  {runtimeSupport.File ? 'Supported' : 'Not supported'}
                 </span>
               </div>
 
@@ -273,26 +282,46 @@ export const ImagePreview = () => {
                 </span>
               </div>
 
-              <div className='jpegr-k'>Blob</div>
-              <div className='jpegr-v'>
-                <span className={badgeClass(runtimeSupport.Blob)}>
-                  {runtimeSupport.Blob ? 'Supported' : 'Not supported'}
-                </span>
-              </div>
-
-              <div className='jpegr-k'>File</div>
-              <div className='jpegr-v'>
-                <span className={badgeClass(runtimeSupport.File)}>
-                  {runtimeSupport.File ? 'Supported' : 'Not supported'}
-                </span>
-              </div>
-
               <div className='jpegr-k'>createObjectURL</div>
               <div className='jpegr-v'>
                 <span className={badgeClass(runtimeSupport.createObjectURL)}>
                   {runtimeSupport.createObjectURL
                     ? 'Supported'
                     : 'Not supported'}
+                </span>
+              </div>
+
+              <div className='jpegr-k'>
+                FileReader <em>(fallback)</em>
+              </div>
+              <div className='jpegr-v'>
+                <span className={badgeClass(runtimeSupport.FileReader)}>
+                  {runtimeSupport.FileReader ? 'Supported' : 'Not supported'}
+                </span>
+              </div>
+
+              <div className='jpegr-k'>
+                Response <em>(fallback)</em>
+              </div>
+              <div className='jpegr-v'>
+                <span className={badgeClass(runtimeSupport.Response)}>
+                  {runtimeSupport.Response ? 'Supported' : 'Not supported'}
+                </span>
+              </div>
+
+              <div className='jpegr-k'>Uint8Array</div>
+              <div className='jpegr-v'>
+                <span className={badgeClass(runtimeSupport.Uint8Array)}>
+                  {runtimeSupport.Uint8Array ? 'Supported' : 'Not supported'}
+                </span>
+              </div>
+
+              <div className='jpegr-k'>
+                DataView <em>(fallback)</em>
+              </div>
+              <div className='jpegr-v'>
+                <span className={badgeClass(runtimeSupport.DataView)}>
+                  {runtimeSupport.DataView ? 'Supported' : 'Not supported'}
                 </span>
               </div>
 
@@ -304,9 +333,7 @@ export const ImagePreview = () => {
               </div>
             </div>
 
-            <p className='jpegr-smallHint jpegr-smallHint--mt10'>
-              User agent (for reference):
-            </p>
+            <p className='jpegr-smallHint jpegr-smallHint--mt10'>User Agent:</p>
             <div className='jpegr-preSmall jpegr-mono'>{userAgent}</div>
           </section>
         </aside>

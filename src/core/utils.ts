@@ -1,4 +1,5 @@
 import type { PreviewSource } from './types.js';
+import { arrayBufferToBinary } from './binary.js';
 import { getRuntimeSupport } from './runtime.js';
 
 export const supports = getRuntimeSupport();
@@ -7,9 +8,10 @@ export const supportsImageProcessing = (): boolean => {
   const supports = getRuntimeSupport();
 
   return (
-    supports.FileReader &&
+    (supports.FileReader || supports.Response) &&
     supports.HTMLCanvasElement &&
-    (supports.Blob || supports.File)
+    (supports.Blob || supports.File) &&
+    (supports.Uint8Array || supports.DataView)
   );
 };
 
@@ -30,6 +32,17 @@ export const processDataUrl = (
   });
 };
 
+export const processDataUrlViaResponse = async (
+  file: File | Blob
+): Promise<string> => {
+  const buffer = await new Response(file).arrayBuffer();
+  const binary = arrayBufferToBinary(buffer);
+  const base64 = btoa(binary);
+  const mimeType = file.type || 'application/octet-stream';
+
+  return `data:${mimeType};base64,${base64}`;
+};
+
 export const buildPreviewSrc = async (
   source: File | Blob
 ): Promise<PreviewSource> => {
@@ -41,17 +54,21 @@ export const buildPreviewSrc = async (
     };
   }
 
-  // Fallback (Blob)
-  if (supports.Blob && source instanceof Blob) {
-    return {
-      src: await processDataUrl(source, 'Failed to convert blob'),
-    };
+  if (supports.FileReader) {
+    if (supports.Blob)
+      return {
+        src: await processDataUrl(source, 'Failed to convert blob'),
+      };
+
+    if (supports.File)
+      return {
+        src: await processDataUrl(source, 'Failed to read file'),
+      };
   }
 
-  // Fallback (File)
-  if (supports.File && source instanceof File) {
+  if (supports.Response) {
     return {
-      src: await processDataUrl(source, 'Failed to read file'),
+      src: await processDataUrlViaResponse(source),
     };
   }
 

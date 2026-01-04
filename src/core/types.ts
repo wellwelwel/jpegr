@@ -84,16 +84,22 @@ export type PreviewSource = {
 export type RuntimeSupport = {
   /** Fallback availabe: ❌ */
   HTMLCanvasElement: boolean;
-  /** Fallback availabe: ❌ */
-  FileReader: boolean;
   /** Fallback availabe: File required */
   Blob: boolean;
   /** Fallback availabe: Blob required */
   File: boolean;
+  /** Fallback availabe: ✅ */
+  FileReader: boolean;
   /** Fallback availabe: ✅ */
   canvasToBlob: boolean;
   /** Fallback availabe: ✅ */
   createObjectURL: boolean;
   /** Fallback availabe: ✅ */
   createImageBitmap: boolean;
+  /** Fallback for: FileReader */
+  Response: boolean;
+  /** Fallback availabe: DataView */
+  Uint8Array: boolean;
+  /** Fallback for: Uint8Array */
+  DataView: boolean;
 };

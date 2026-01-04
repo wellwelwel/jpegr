@@ -17,5 +17,8 @@ export const getRuntimeSupport = (): RuntimeSupport => {
       typeof URL.revokeObjectURL === 'function',
     createImageBitmap: typeof createImageBitmap !== 'undefined',
     File: typeof File !== 'undefined',
+    Response: typeof Response !== 'undefined',
+    Uint8Array: typeof Uint8Array !== 'undefined',
+    DataView: typeof DataView !== 'undefined',
   };
 };

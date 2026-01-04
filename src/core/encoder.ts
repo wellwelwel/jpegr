@@ -1,19 +1,16 @@
 import type { DecodedImage } from './types.js';
+import { binaryToArrayBuffer } from './binary.js';
 import { supports } from './utils.js';
 
 const dataUrlToFile = (dataUrl: string): File | Blob => {
   const [header, base64] = dataUrl.split(',');
   const mimeType = header.split(':')[1].split(';')[0];
   const decodedBinary = atob(base64);
+  const buffer = binaryToArrayBuffer(decodedBinary);
 
-  const byteArray = Uint8Array.from(decodedBinary, (char) =>
-    char.charCodeAt(0)
-  );
+  if (supports.Blob) return new Blob([buffer], { type: mimeType });
 
-  if (supports.Blob) return new Blob([byteArray], { type: mimeType });
-
-  // Fallback
-  return new File([byteArray], 'image.jpg', { type: mimeType });
+  return new File([buffer], 'image.jpg', { type: mimeType });
 };
 
 const canvasToFile = (
