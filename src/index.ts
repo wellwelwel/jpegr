@@ -82,18 +82,37 @@ export class JPGER {
     throw new Error('Invalid input type. Expected File or HTMLInputElement.');
   }
 
-  private async fromInput(
-    input: HTMLInputElement,
-    maxSize = this.maxSize
-  ): Promise<ProcessResult> {
-    const file = input.files?.[0];
-    if (!file)
-      return {
-        success: false,
-        error: 'No file selected.',
-      };
+  /**
+   * Uploads the processed image to the specified URL using a POST request by default.
+   */
+  async upload(
+    url: string,
+    options?: {
+      field?: string;
+      name?: string;
+      init?: RequestInit;
+    }
+  ): Promise<Response> {
+    if (!this.processedImage) throw new Error('No processed image to upload.');
 
-    return this.fromFile(file, maxSize);
+    const {
+      field = 'image',
+      name = 'image.jpeg',
+      init,
+    } = options ?? Object.create(null);
+
+    const formData = new FormData();
+    formData.append(field, this.processedImage.file, name);
+
+    const response = await fetch(url, {
+      ...init,
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) throw new Error('Upload failed');
+
+    return response;
   }
 
   private async fromFile(
@@ -178,37 +197,18 @@ export class JPGER {
     }
   }
 
-  /**
-   * Uploads the processed image to the specified URL using a POST request by default.
-   */
-  async upload(
-    url: string,
-    options?: {
-      field?: string;
-      name?: string;
-      init?: RequestInit;
-    }
-  ): Promise<Response> {
-    if (!this.processedImage) throw new Error('No processed image to upload.');
+  private async fromInput(
+    input: HTMLInputElement,
+    maxSize = this.maxSize
+  ): Promise<ProcessResult> {
+    const file = input.files?.[0];
+    if (!file)
+      return {
+        success: false,
+        error: 'No file selected.',
+      };
 
-    const {
-      field = 'image',
-      name = 'image.jpeg',
-      init,
-    } = options ?? Object.create(null);
-
-    const formData = new FormData();
-    formData.append(field, this.processedImage.file, name);
-
-    const response = await fetch(url, {
-      ...init,
-      method: 'POST',
-      body: formData,
-    });
-
-    if (!response.ok) throw new Error('Upload failed');
-
-    return response;
+    return this.fromFile(file, maxSize);
   }
 
   private syncPreview(): void {
