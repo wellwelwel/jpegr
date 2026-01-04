@@ -10,27 +10,33 @@ body {
   display: flex;
   flex-direction: column;
   place-content: flex-start;
-  gap: 5px;
+  gap: 10px;
   padding: 15px;
 }
 
-hr {
-  width: 100%;
+input {
+  display: block;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ccc;
 }
 
 img {
   max-width: 480px;
   max-height: 480px;
+  width: 100%;
+  height: fit-content;
   border-radius: 10px;
-  object-fit: scale-down;
+  object-fit: contain;
   object-position: 0 0;
 }
 
 pre {
   padding: 20px;
   margin: 0;
-  background-color: #1e1e1e20;
   border-radius: 10px;
+  border: 1px dashed #7a55ff;
+  background-color: #b5a1ff20;
+  color: #705bbc;
   font-family: monospace;
   white-space: pre-wrap;
 }

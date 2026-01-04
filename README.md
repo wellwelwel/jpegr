@@ -21,7 +21,7 @@ A browser module to take **all image formats** supported by `HTMLCanvasElement` 
 - [Examples](#examples)
   - [JavaScript and TypeScript](#javascript-and-typescript)
     - [Upload to a backend endpoint](#upload-to-a-backend-endpoint)
-  - [React](#%EF%B8%8F-react)
+  - [React](#react)
 - [Troubleshooting](#troubleshooting)
   - [Browser support](#browser-support)
   - [Debugging](#debugging)
@@ -196,35 +196,24 @@ import type { ChangeEvent } from 'react';
 import { JPGER } from 'jpegr';
 import { useRef, useState } from 'react';
 
-export const ImagePreview = () => {
+export default () => {
   const { current: jpegr } = useRef(new JPGER());
-  const [state, setState] = useState<ProcessResult | null>(null);
+  const [result, setResult] = useState<ProcessResult | null>(null);
 
-  const onChange = async (event: ChangeEvent<HTMLInputElement>) => {
-    const input = event.currentTarget;
-    const result = await jpegr.process(input);
-
-    if (!result.success) {
-      jpegr.clear();
-      setState(result);
-      return;
-    }
-
-    setState(result);
+  const onChange = (event: ChangeEvent<HTMLInputElement>) => {
+    jpegr.process(event.currentTarget).then((data) => {
+      if (!data.success) jpegr.clear();
+      setResult(data);
+    });
   };
 
   return (
     <>
       <input type='file' accept='image/*' onChange={onChange} />
-      <hr />
-      {state?.error ? <p role='alert'>{state.error}</p> : null}
-      {state?.success && state.image ? (
-        <>
-          <img src={state.image.src} alt='Selected image preview' />
-          <hr />
-          <pre>{JSON.stringify(state.image.metadata, null, 2)}</pre>
-        </>
-      ) : null}
+      {result?.image && (
+        <img src={result.image.src} alt='Selected image preview' />
+      )}
+      <pre>{JSON.stringify(result, null, 2)}</pre>
     </>
   );
 };

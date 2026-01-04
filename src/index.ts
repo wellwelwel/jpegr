@@ -183,7 +183,7 @@ export class JPGER {
       this.processedImage = processed;
       this.syncPreview();
 
-      return { success: true, image: processed };
+      return { success: true, error: null, image: processed };
     } catch (error) {
       console.error(error);
 

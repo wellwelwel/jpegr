@@ -32,7 +32,7 @@ export type ProcessedImage = {
  */
 export type ProcessResult = {
   success: boolean;
-  error?: string;
+  error: string | null;
   image?: ProcessedImage;
 };
 
