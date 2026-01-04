@@ -24,8 +24,8 @@ img {
   max-width: 480px;
   max-height: 480px;
   width: 100%;
+  min-width: fit-content;
   height: fit-content;
-  border-radius: 10px;
   object-fit: contain;
   object-position: 0 0;
 }
