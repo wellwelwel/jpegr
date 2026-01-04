@@ -26,7 +26,9 @@
     "test": "playwright test",
     "test:debug": "playwright test --debug",
     "test:report": "playwright show-report",
-    "dev": "cd website && npm start"
+    "dev": "cd website && npm start",
+    "lint": "prettier --check .",
+    "lint:fix": "prettier --write .github/workflows/*.yml ."
   },
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "^4.7.0",
