@@ -29,7 +29,7 @@ export const ImagePreview = () => {
     originalObjectUrl,
     originalSizeText,
     processedObjectUrl,
-    processedSizeText,
+    fileSizeText,
     resultText,
     runtimeSupport,
     selectedFile,
@@ -121,7 +121,7 @@ export const ImagePreview = () => {
             <div className='jpegr-previewBox'>
               <div className='jpegr-previewHeader'>
                 <p className='jpegr-previewTitle'>Processed (JPEG)</p>
-                <span className='jpegr-smallHint'>{processedSizeText}</span>
+                <span className='jpegr-smallHint'>{fileSizeText}</span>
               </div>
 
               {processedObjectUrl ? (

@@ -17,7 +17,6 @@ A browser module to take **all image formats** supported by `HTMLCanvasElement` 
 - [API reference](#api-reference)
   - [Constructor](#constructor)
   - [Methods](#methods)
-  - [Getters](#getters)
   - [Types](#types)
 - [Examples](#examples)
   - [JavaScript and TypeScript](#javascript-and-typescript)
@@ -123,13 +122,11 @@ const jpegr = new JPGER({
 
 #### `fromInput`
 
-Processes the first file in an `<input type="file">`.
+Processes an image `File` in an `<input type="file">` and stores the result in memory on success.
 
 ```ts
 const result = await jpegr.fromInput(inputElement, 1024 * 1024);
 ```
-
-- Returns `{ success: false, error: "No file selected." }` if the input has no file.
 
 #### `fromFile`
 
@@ -138,8 +135,6 @@ Processes an image `File` and stores the result in memory on success.
 ```ts
 const result = await jpegr.fromFile(file, 1024 * 1024);
 ```
-
-- Returns `{ success: false, error: "No file selected." }` if the input has no file.
 
 #### `upload`
 
@@ -170,39 +165,6 @@ Clears the stored processed image from memory.
 ```ts
 jpegr.clear();
 ```
-
----
-
-### Getters
-
-#### `image`
-
-- Returns the latest processed image or `null`.
-
-#### `fileSize`
-
-- Returns the processed blob size in bytes. Returns `0` if there is no processed image.
-
-#### `fileSizeFormatted`
-
-- Human-readable file size.
-
-#### `wasConverted`
-
-- Returns `true` if the input file MIME type was not `image/jpeg`.
-
-#### `wasCompressed`
-
-- Returns `true` if the module had to lower the JPEG quality to meet the size limit.
-
-#### `compressionQuality`
-
-- Returns the final quality used for encoding (range `minQuality..1.0`).
-- If no image has been processed, it returns the instance default quality (from the constructor).
-
-#### `metadata`
-
-- Returns full metadata or `null` if no image has been processed.
 
 ---
 

@@ -1,16 +1,15 @@
 import type {
   JPGEROptions,
   ProcessedImage,
-  ProcessedImageMetadata,
   ProcessResult,
   RuntimeSupport,
 } from './core/types.js';
 import { compressToFit } from './core/compressor.js';
 import { decodeImage } from './core/decoder.js';
-import { getRuntimeSupport } from './core/runtime.js';
 import {
   buildPreviewSrc,
   formatBytes,
+  supports,
   supportsImageProcessing,
 } from './core/utils.js';
 
@@ -23,23 +22,9 @@ const DEFAULT_MIN_QUALITY = 0.1;
  * **JPGER** - Browser image processing module.
  */
 export class JPGER {
-  /**
-   * Returns browser runtime support for image processing features.
-   */
-  static getRuntimeSupport(): RuntimeSupport {
-    return getRuntimeSupport();
-  }
-
-  /**
-   * Returns whether the current browser supports image processing.
-   */
-  static canProcess(): boolean {
-    return supportsImageProcessing();
-  }
-
   private processedImage: ProcessedImage | null = null;
-  private previewElement: HTMLImageElement | null = null;
 
+  private readonly previewElement: HTMLImageElement | null = null;
   private readonly maxSize: number;
   private readonly maxQuality: number;
   private readonly compressionStep: number;
@@ -55,34 +40,23 @@ export class JPGER {
     this.syncPreview();
   }
 
-  get image(): ProcessedImage | null {
-    return this.processedImage;
+  /**
+   * Returns browser runtime support for image processing features.
+   */
+  static getRuntimeSupport(): RuntimeSupport {
+    return supports;
   }
 
-  get fileSize(): number {
-    return this.processedImage?.blob.size ?? 0;
+  /**
+   * Returns whether the current browser supports image processing.
+   */
+  static canProcess(): boolean {
+    return supportsImageProcessing();
   }
 
-  get fileSizeFormatted(): string {
-    return formatBytes(this.fileSize);
-  }
-
-  get wasConverted(): boolean {
-    return this.processedImage?.metadata.wasConverted ?? false;
-  }
-
-  get wasCompressed(): boolean {
-    return this.processedImage?.metadata.wasCompressed ?? false;
-  }
-
-  get compressionQuality(): number {
-    return this.processedImage?.metadata.compressionQuality ?? this.maxQuality;
-  }
-
-  get metadata(): ProcessedImageMetadata | null {
-    return this.processedImage?.metadata ?? null;
-  }
-
+  /**
+   * Clears the current processed image and frees associated resources.
+   */
   clear(): void {
     this.processedImage?.revoke?.();
     this.processedImage = null;
@@ -111,9 +85,9 @@ export class JPGER {
       const originalSize = file.size;
       const originalType = file.type;
 
-      let blob: Blob;
-      let wasConverted = false;
-      let wasCompressed = false;
+      let blob: File | Blob;
+      let converted = false;
+      let compressed = false;
       let finalQuality = this.maxQuality;
 
       // Fast path: JPEG within size limit OR browser doesn't support processing
@@ -126,7 +100,7 @@ export class JPGER {
         blob = file;
       } else {
         // Decode and compress
-        wasConverted = file.type !== 'image/jpeg';
+        converted = file.type !== 'image/jpeg';
         decoded = await decodeImage(file);
 
         const result = await compressToFit(decoded, {
@@ -138,32 +112,40 @@ export class JPGER {
         });
 
         blob = result.blob;
-        wasCompressed = result.wasCompressed;
+        compressed = result.compressed;
         finalQuality = result.finalQuality;
       }
 
       this.processedImage?.revoke?.();
 
       const previewSrc = await buildPreviewSrc(blob);
-      const processed: ProcessedImage = Object.freeze({
-        blob,
-        dataUrl: previewSrc.src,
-        metadata: Object.freeze({
-          originalSize,
-          originalType,
-          processedSize: blob.size,
-          wasConverted,
-          wasCompressed,
-          compressionQuality: finalQuality,
-        }),
-        revoke: previewSrc.revoke,
-      });
+      const processed: ProcessedImage = {
+        file: blob,
+        src: previewSrc.src,
+        metadata: {
+          original: {
+            size: originalSize,
+            sizeFormatted: formatBytes(originalSize),
+            type: originalType,
+          },
+          processed: {
+            size: blob.size,
+            sizeFormatted: formatBytes(blob.size),
+            type: blob.type,
+            converted,
+            compressed,
+            quality: finalQuality,
+          },
+        },
+      };
 
       this.processedImage = processed;
       this.syncPreview();
 
       return { success: true, image: processed };
     } catch (error) {
+      console.error(error);
+
       return {
         success: false,
         error:
@@ -174,6 +156,9 @@ export class JPGER {
     }
   }
 
+  /**
+   * Uploads the processed image to the specified URL using a POST request by default.
+   */
   async upload(
     url: string,
     options?: {
@@ -182,9 +167,7 @@ export class JPGER {
       init?: RequestInit;
     }
   ): Promise<Response> {
-    if (!this.processedImage) {
-      throw new Error('No processed image to upload.');
-    }
+    if (!this.processedImage) throw new Error('No processed image to upload.');
 
     const {
       field = 'image',
@@ -193,7 +176,7 @@ export class JPGER {
     } = options ?? Object.create(null);
 
     const formData = new FormData();
-    formData.append(field, this.processedImage.blob, name);
+    formData.append(field, this.processedImage.file, name);
 
     const response = await fetch(url, {
       ...init,
@@ -217,15 +200,13 @@ export class JPGER {
       return;
     }
 
-    element.src = this.processedImage.dataUrl;
+    element.src = this.processedImage.src;
     element.alt = 'Image preview';
   }
 }
 
 export type {
   JPGEROptions,
-  ProcessedImage,
-  ProcessedImageMetadata,
   ProcessResult,
   RuntimeSupport,
 } from './core/types.js';

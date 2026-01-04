@@ -18,6 +18,9 @@ import {
 
 export const usePlayground = (): JPGERPlaygroundViewModel => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [processedResult, setProcessedResult] = useState<ProcessResult | null>(
+    null
+  );
 
   // JPGER configurable options
   const [defaultMaxSizeMb, setDefaultMaxSizeMb] = useState<number>(1);
@@ -40,7 +43,7 @@ export const usePlayground = (): JPGERPlaygroundViewModel => {
   const [info, setInfo] = useState<string | null>(null);
   const [lastDebug, setLastDebug] = useState<RunDebug | null>(null);
 
-  const jpegrOptions = useMemo<Omit<Required<JPGEROptions>, 'preview'>>(
+  const jpegrOptions = useMemo<Omit<JPGEROptions, 'preview'>>(
     () =>
       buildJPGEROptions({
         defaultMaxSizeMb,
@@ -63,7 +66,7 @@ export const usePlayground = (): JPGERPlaygroundViewModel => {
     });
 
     setLastDebug(null);
-    jpegr.clear();
+    setProcessedResult(null);
 
     if (selectedFile) {
       setInfo(
@@ -98,7 +101,9 @@ export const usePlayground = (): JPGERPlaygroundViewModel => {
     const durationMs = Math.round(performance.now() - start);
 
     if (result.success) {
-      const processedPreview = await buildPreviewSrc(result.image.blob);
+      setProcessedResult(result);
+
+      const processedPreview = await buildPreviewSrc(result.image.file);
       setProcessedObjectUrl((prev) => {
         revokeObjectUrl(prev);
         return processedPreview.src;
@@ -119,13 +124,15 @@ export const usePlayground = (): JPGERPlaygroundViewModel => {
         output: {
           success: true,
           error: null,
-          metadata: result.image.metadata,
-          processedBlobType: result.image.blob.type,
-          processedBlobSize: result.image.blob.size,
-          processedDataUrlLength: result.image.dataUrl.length,
+          metadata: result.image.metadata.processed,
+          processedBlobType: result.image.file.type,
+          processedBlobSize: result.image.file.size,
+          processedDataUrlLength: result.image.src.length,
         },
       });
     } else {
+      setProcessedResult(null);
+
       setLastDebug({
         startedAtIso,
         durationMs,
@@ -177,7 +184,7 @@ export const usePlayground = (): JPGERPlaygroundViewModel => {
       return null;
     });
 
-    jpegr.clear();
+    setProcessedResult(null);
     await runProcess(file);
   };
 
@@ -201,20 +208,22 @@ export const usePlayground = (): JPGERPlaygroundViewModel => {
       return null;
     });
 
-    jpegr.clear();
+    setProcessedResult(null);
 
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  const effectiveMaxSizeBytes = jpegrOptions.maxSize;
-  const hasProcessed = !!jpegr.image;
+  const effectiveMaxSizeBytes = jpegrOptions.maxSize ?? 0;
+  const hasProcessed = processedResult?.success === true;
   const canProcess = !!selectedFile && !isBusy;
   const originalSizeText = selectedFile ? formatBytes(selectedFile.size) : '';
   const effectiveMaxSizeText = formatBytes(effectiveMaxSizeBytes);
-  const finalSizeText = hasProcessed ? jpegr.fileSizeFormatted : '—';
+  const finalSizeText = hasProcessed
+    ? (processedResult.image.metadata.processed?.sizeFormatted ?? '—')
+    : '—';
 
-  const processedSizeText = hasProcessed
-    ? formatBytes(jpegr.image?.blob.size ?? 0)
+  const fileSizeText = hasProcessed
+    ? formatBytes(processedResult.image.file.size)
     : '';
 
   const resultText = isBusy
@@ -226,17 +235,17 @@ export const usePlayground = (): JPGERPlaygroundViewModel => {
         : 'Select a file';
 
   const convertedText = hasProcessed
-    ? jpegr.wasConverted
+    ? processedResult.image.metadata.processed?.converted
       ? 'Yes'
       : 'No'
     : '—';
   const compressedText = hasProcessed
-    ? jpegr.wasCompressed
+    ? processedResult.image.metadata.processed?.compressed
       ? 'Yes'
       : 'No'
     : '—';
   const finalQualityText = hasProcessed
-    ? jpegr.compressionQuality.toFixed(2)
+    ? processedResult.image.metadata.processed?.quality.toFixed(2) || '—'
     : '—';
 
   const onDefaultMaxSizeMbChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -259,6 +268,8 @@ export const usePlayground = (): JPGERPlaygroundViewModel => {
     if (!selectedFile) return;
     await runProcess(selectedFile);
   };
+
+  processedResult?.success && console.log(processedResult.image);
 
   return {
     fileInputRef,
@@ -283,7 +294,7 @@ export const usePlayground = (): JPGERPlaygroundViewModel => {
     canvasOutputStrategy: getCanvasOutputStrategy(RUNTIME_SUPPORT),
 
     originalSizeText,
-    processedSizeText,
+    fileSizeText,
 
     effectiveMaxSizeText,
 

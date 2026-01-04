@@ -1,6 +1,7 @@
 import type { DecodedImage } from './types.js';
+import { supports } from './utils.js';
 
-const dataUrlToBlob = (dataUrl: string): Blob => {
+const dataUrlToFile = (dataUrl: string): File | Blob => {
   const [header, base64] = dataUrl.split(',');
   const mimeType = header.split(':')[1].split(';')[0];
   const decodedBinary = atob(base64);
@@ -9,14 +10,17 @@ const dataUrlToBlob = (dataUrl: string): Blob => {
     char.charCodeAt(0)
   );
 
-  return new Blob([byteArray], { type: mimeType });
+  if (supports.Blob) return new Blob([byteArray], { type: mimeType });
+
+  // Fallback
+  return new File([byteArray], 'image.jpg', { type: mimeType });
 };
 
-const canvasToBlob = (
+const canvasToFile = (
   canvas: HTMLCanvasElement,
   quality: number
-): Promise<Blob> => {
-  if (typeof canvas.toBlob === 'function')
+): Promise<File | Blob> => {
+  if (supports.Blob && supports.canvasToBlob)
     return new Promise((resolve, reject) => {
       canvas.toBlob(
         (blob) => (blob ? resolve(blob) : reject(new Error('Encoding failed'))),
@@ -25,16 +29,15 @@ const canvasToBlob = (
       );
     });
 
-  // Fallback
   return Promise.resolve(
-    dataUrlToBlob(canvas.toDataURL('image/jpeg', quality))
+    dataUrlToFile(canvas.toDataURL('image/jpeg', quality))
   );
 };
 
 export const encodeToJpeg = (
   decoded: DecodedImage,
   quality: number
-): Promise<Blob> => {
+): Promise<File | Blob> => {
   const canvas = document.createElement('canvas');
   canvas.width = decoded.width;
   canvas.height = decoded.height;
@@ -46,5 +49,5 @@ export const encodeToJpeg = (
   context.fillRect(0, 0, canvas.width, canvas.height);
   context.drawImage(decoded.source, 0, 0, decoded.width, decoded.height);
 
-  return canvasToBlob(canvas, quality);
+  return canvasToFile(canvas, quality);
 };

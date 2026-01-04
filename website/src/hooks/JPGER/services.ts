@@ -47,7 +47,7 @@ export const buildJPGEROptions = (input: {
   maxQuality: number;
   compressionStep: number;
   minQuality: number;
-}): Omit<Required<JPGEROptions>, 'preview'> => {
+}): Omit<JPGEROptions, 'preview'> => {
   const normalizedDefaultMaxSizeMb = clampNumber(
     input.defaultMaxSizeMb,
     0.01,
@@ -73,12 +73,16 @@ export const buildJPGEROptions = (input: {
 };
 
 export const validateJPGEROptions = (
-  options: Omit<Required<JPGEROptions>, 'preview'>
+  options: Omit<JPGEROptions, 'preview'>
 ): string | null => {
-  if (options.maxQuality < options.minQuality)
+  if (
+    options.maxQuality !== undefined &&
+    options.minQuality !== undefined &&
+    options.maxQuality < options.minQuality
+  )
     return 'Invalid config: maxQuality cannot be lower than minQuality.';
 
-  if (options.compressionStep <= 0)
+  if (options.compressionStep !== undefined && options.compressionStep <= 0)
     return 'Invalid config: compressionStep must be greater than 0.';
 
   return null;
