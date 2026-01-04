@@ -54,16 +54,14 @@ npm i jpegr
 ```ts
 import { JPGER } from 'jpegr';
 
-const input = document.querySelector<HTMLInputElement>('#file');
 const preview = document.querySelector<HTMLImageElement>('#preview');
+const input = document.querySelector<HTMLInputElement>('#file');
 const button = document.querySelector<HTMLButtonElement>('#upload');
 
-const jpegr = new JPGER({
-  preview, // optional
-});
+const jpegr = new JPGER({ preview });
 
 input?.addEventListener('change', () => {
-  jpegr.process(input); // It will automatically show preview.
+  jpegr.process(input); // It will automatically show preview ✨
 });
 
 button?.addEventListener('click', () => {
@@ -72,7 +70,7 @@ button?.addEventListener('click', () => {
     return;
   }
 
-  jpegr.upload('/api/upload'); // That's it! ✨
+  jpegr.upload('/api/upload'); // That's it ⭐️
 });
 ```
 
@@ -93,7 +91,7 @@ Creates a new processor instance with its own internal cache and configuration d
 import { JPGER } from 'jpegr';
 
 const jpegr = new JPGER({
-  preview: null, // Specify an Image element to preview the processed image
+  preview: null, // Specify an image element to preview the processed image.
   maxSize: 1 * 1024 * 1024,
   minQuality: 0.1,
   maxQuality: 1,
@@ -295,4 +293,4 @@ const support = JPGER.getRuntimeSupport();
 ## License
 
 **JPEGR** is under the [**MIT License**](https://github.com/wellwelwel/jpegr/blob/main/LICENSE).<br />
-Copyright © 2025-present [Weslley Araújo](https://github.com/wellwelwel) and **JPEGR** [contributors](https://github.com/wellwelwel/jpegr/graphs/contributors).
+Copyright © 2025-present [**Weslley Araújo**](https://github.com/wellwelwel) and **JPEGR** [**contributors**](https://github.com/wellwelwel/jpegr/graphs/contributors).
