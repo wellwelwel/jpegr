@@ -37,7 +37,8 @@ A browser module to take **all image formats** supported by `HTMLCanvasElement` 
 - Always outputs **JPEG**.
 - Uses the original image when both format and size are within expectations.
 - Normalizes **EXIF** orientation for **JPEG** inputs _(common "bug" in smartphone photos)_.
-- **Automatic compression** starting from a chosen initial quality with granular steps.
+- Automatic compression starting from a chosen initial quality with granular steps.
+- Auto preview and easy upload to backend endpoints.
 
 ---
 
