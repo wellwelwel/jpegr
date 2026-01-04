@@ -248,7 +248,7 @@ export default () => {
 - `Uint8Array` → falls back to `DataView`
 - `createImageBitmap` and `URL.createObjectURL` → falls back to `FileReader` → falls back to `Response` API
 
-If critical features are unavailable, **JPEGR** will use the original image without processing.
+If critical features are unavailable, **JPEGR** will use the original image without processing and `preview` will not be available.
 
 > [!TIP]
 >
