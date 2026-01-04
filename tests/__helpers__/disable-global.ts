@@ -14,6 +14,10 @@ export const disableGlobal = (
       return 'URL.createObjectURL = undefined; URL.revokeObjectURL = undefined;';
     case 'toBlob':
       return 'HTMLCanvasElement.prototype.toBlob = undefined;';
+    case 'FileReader':
+      return 'delete window.FileReader; URL.createObjectURL = undefined; URL.revokeObjectURL = undefined;';
+    case 'Unit8Array':
+      return 'delete window.Uint8Array; URL.createObjectURL = undefined; URL.revokeObjectURL = undefined;';
     default:
       return '';
   }

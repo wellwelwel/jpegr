@@ -38,6 +38,7 @@ A browser module to take **all image formats** supported by `HTMLCanvasElement` 
 - Normalizes **EXIF** orientation for **JPEG** inputs _(common "bug" in smartphone photos)_.
 - Automatic compression starting from a chosen initial quality with granular steps.
 - Auto preview and easy upload to backend endpoints.
+- Extensive fallback support for older and lite browsers.
 
 ---
 
@@ -240,13 +241,14 @@ export default () => {
 
 ### Browser support
 
-This module requires standard browser APIs:
+**JPEGR** uses the following browser APIs:
 
-- `FileReader`
 - `HTMLCanvasElement`
-- `Blob` or `File`
+- `Blob` → falls back to `File`
+- `Uint8Array` → falls back to `DataView`
+- `createImageBitmap` and `URL.createObjectURL` → falls back to `FileReader` → falls back to `Response` API
 
-If some of these features are unavailable in the browser, the original image will be used, regardless of size or type.
+If critical features are unavailable, **JPEGR** will use the original image without processing.
 
 > [!TIP]
 >

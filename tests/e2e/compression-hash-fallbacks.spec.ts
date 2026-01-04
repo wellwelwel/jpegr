@@ -10,6 +10,8 @@ export const FEATURES_TO_DISABLE = [
   'File',
   'createObjectURL',
   'toBlob',
+  'FileReader',
+  'Unit8Array',
 ] as const;
 
 for (const featureName of FEATURES_TO_DISABLE) {
