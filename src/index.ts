@@ -23,6 +23,7 @@ const DEFAULT_MIN_QUALITY = 0.1;
  */
 export class JPGER {
   private processedImage: ProcessedImage | null = null;
+  private error: string | null = null;
 
   private readonly previewElement: HTMLImageElement | null = null;
   private readonly maxSize: number;
@@ -55,15 +56,6 @@ export class JPGER {
   }
 
   /**
-   * Clears the current processed image and frees associated resources.
-   */
-  clear(): void {
-    this.processedImage?.revoke?.();
-    this.processedImage = null;
-    this.syncPreview();
-  }
-
-  /**
    * Processes an image from either a File or an HTMLInputElement.
    */
   async process(
@@ -80,6 +72,19 @@ export class JPGER {
       return this.fromFile(input, maxSize);
 
     throw new Error('Invalid input type. Expected File or HTMLInputElement.');
+  }
+
+  /**
+   * Clears the current processed image and frees associated resources.
+   */
+  /**
+   * Clears the current processed image, error state, and frees associated resources.
+   */
+  clear(): void {
+    this.processedImage?.revoke?.();
+    this.processedImage = null;
+    this.error = null;
+    this.syncPreview();
   }
 
   /**
@@ -113,6 +118,16 @@ export class JPGER {
     if (!response.ok) throw new Error('Upload failed');
 
     return response;
+  }
+
+  /**
+   * Returns the current JPGER instance status.
+   */
+  get status() {
+    return {
+      hasImage: !!this.processedImage,
+      error: this.error,
+    };
   }
 
   private async fromFile(
@@ -181,16 +196,19 @@ export class JPGER {
       };
 
       this.processedImage = processed;
+      this.error = null;
       this.syncPreview();
 
       return { success: true, error: null, image: processed };
     } catch (error) {
       console.error(error);
 
+      this.error =
+        error instanceof Error ? error.message : 'Failed to process image.';
+
       return {
         success: false,
-        error:
-          error instanceof Error ? error.message : 'Failed to process image.',
+        error: this.error,
       };
     } finally {
       decoded?.dispose();

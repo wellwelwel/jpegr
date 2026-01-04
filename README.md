@@ -2,7 +2,7 @@
 
 A browser module to take **all image formats** supported by `HTMLCanvasElement` and convert them to **JPEG** with **size-targeted compression** to meet a configurable maximum output size.
 
-- [**JPEGR Playground**](https://wellwelwel.github.io/jpegr/) 🎮
+- 🎮 [**JPEGR Playground**](https://wellwelwel.github.io/jpegr/)
 
 ---
 
@@ -19,7 +19,7 @@ A browser module to take **all image formats** supported by `HTMLCanvasElement` 
   - [Methods](#methods)
   - [Types](#types)
 - [Examples](#examples)
-  - [JavaScript and TypeScript](#javascript-and-typescript)
+  - [JavaScript](#javascript)
     - [Upload to a backend endpoint](#upload-to-a-backend-endpoint)
   - [React](#react)
 - [Troubleshooting](#troubleshooting)
@@ -37,7 +37,7 @@ A browser module to take **all image formats** supported by `HTMLCanvasElement` 
 - Always outputs **JPEG**.
 - Uses the original image when both format and size are within expectations.
 - Normalizes **EXIF** orientation for **JPEG** inputs _(common "bug" in smartphone photos)_.
-- **Automatic compression** starts from a chosen initial quality and will step down as needed until the output fits the size limit or reaches the minimum quality threshold.
+- **Automatic compression** starting from a chosen initial quality with granular steps.
 
 ---
 
@@ -47,30 +47,37 @@ A browser module to take **all image formats** supported by `HTMLCanvasElement` 
 npm i jpegr
 ```
 
-- No external dependencies are required.
-
 ---
 
 ## Quick start
 
-### Convert an image file and display a preview
-
-#### From Input
-
 ```ts
 import { JPGER } from 'jpegr';
 
-const input = document.querySelector<HTMLInputElement>('#file')!;
+const input = document.querySelector<HTMLInputElement>('#file');
+const preview = document.querySelector<HTMLImageElement>('#preview');
+const button = document.querySelector<HTMLButtonElement>('#upload');
+
 const jpegr = new JPGER({
-  preview: document.querySelector<HTMLImageElement>('#preview'),
+  preview, // optional
 });
 
-input.addEventListener('change', async () => {
-  const result = await jpegr.process(input);
+input?.addEventListener('change', () => {
+  jpegr.process(input); // It will automatically show preview.
+});
 
-  console.log(result);
+button?.addEventListener('click', () => {
+  if (!jpegr.status.hasImage || jpegr.status.error) {
+    alert('Upload a valid image to proceed.');
+    return;
+  }
+
+  jpegr.upload('/api/upload'); // That's it! ✨
 });
 ```
+
+- See the [**Examples section**](#examples) for **React** and real-world usage approaches and the [**Overview section**](#overview) for visual example.
+- See the [**./examples**](./examples) directory for complete and functional working examples.
 
 ---
 
@@ -112,6 +119,10 @@ const result = await jpegr.process(inputElement);
 
 Uploads the cached processed image to a backend URL as multipart form data.
 
+```ts
+const response = await jpegr.upload('/api/upload');
+```
+
 **Options:**
 
 - `field` (default: `"image"`)
@@ -142,7 +153,7 @@ jpegr.clear();
 
 ## Examples
 
-### JavaScript and TypeScript
+### JavaScript
 
 ```html
 <input id="file" type="file" accept="image/*" />
