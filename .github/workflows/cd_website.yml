@@ -28,10 +28,10 @@ jobs:
           restore-keys: npm-
 
       - name: Installing Dependencies
-        run: cd website && npm ci
+        run: npm ci --prefix website
 
       - name: Building Site
-        run: cd website && npm run build
+        run: npm run build --prefix website
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4

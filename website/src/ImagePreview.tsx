@@ -26,10 +26,10 @@ export const ImagePreview = () => {
     onProcess,
     onReset,
     onSelectFile,
-    originalObjectUrl,
+    objectUrl,
     originalSizeText,
     processedObjectUrl,
-    processedSizeText,
+    fileSizeText,
     resultText,
     runtimeSupport,
     selectedFile,
@@ -105,10 +105,10 @@ export const ImagePreview = () => {
                 <span className='jpegr-smallHint'>{originalSizeText}</span>
               </div>
 
-              {originalObjectUrl ? (
+              {objectUrl ? (
                 <img
                   className='jpegr-img'
-                  src={originalObjectUrl}
+                  src={objectUrl}
                   alt='Original preview'
                 />
               ) : (
@@ -121,7 +121,7 @@ export const ImagePreview = () => {
             <div className='jpegr-previewBox'>
               <div className='jpegr-previewHeader'>
                 <p className='jpegr-previewTitle'>Processed (JPEG)</p>
-                <span className='jpegr-smallHint'>{processedSizeText}</span>
+                <span className='jpegr-smallHint'>{fileSizeText}</span>
               </div>
 
               {processedObjectUrl ? (

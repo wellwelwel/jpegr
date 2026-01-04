@@ -11,7 +11,7 @@ const loadImage = (src: string): Promise<HTMLImageElement> => {
   });
 };
 
-export const decodeImage = async (file: File): Promise<DecodedImage> => {
+export const decodeImage = async (file: File | Blob): Promise<DecodedImage> => {
   if (typeof createImageBitmap === 'function') {
     try {
       const bitmap = await createImageBitmap(file, {

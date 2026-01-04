@@ -1,37 +1,45 @@
-/**
- * Metadata about the processed image
- */
-export type ProcessedImageMetadata = Readonly<{
-  originalSize: number;
-  originalType: string;
-  processedSize: number;
-  wasConverted: boolean;
-  wasCompressed: boolean;
-  compressionQuality: number;
-}>;
+export type ProcessedImageMetadata = {
+  size: number;
+  sizeFormatted: string;
+  type: string;
+  converted: boolean;
+  compressed: boolean;
+  quality: number;
+};
+
+export type SourceImageMetadata = {
+  size: number;
+  sizeFormatted: string;
+  type: string;
+};
 
 /**
  * Processed image result
  */
-export type ProcessedImage = Readonly<{
-  blob: Blob;
-  dataUrl: string;
-  metadata: ProcessedImageMetadata;
-  /** Optional function to revoke Object URLs and free memory */
+export type ProcessedImage = {
+  file: Blob | File;
+  src: string;
+  metadata: {
+    original: SourceImageMetadata;
+    processed: ProcessedImageMetadata;
+  };
+  /** Internal function to revoke Object URLs and free memory */
   revoke?: () => void;
-}>;
+};
 
 /**
  * Result of image processing operation
  */
-export type ProcessResult =
-  | { success: true; image: ProcessedImage }
-  | { success: false; error: string };
+export type ProcessResult = {
+  success: boolean;
+  error: string | null;
+  image?: ProcessedImage;
+};
 
 /**
  * Configuration options for JPGER
  */
-export type JPGEROptions = Readonly<{
+export type JPGEROptions = {
   /** Element to preview the processed image */
   preview?: HTMLImageElement | null;
   /** Maximum file size in bytes (default: 1MB) */
@@ -42,19 +50,19 @@ export type JPGEROptions = Readonly<{
   compressionStep?: number;
   /** Minimum quality threshold (default: 0.1) */
   minQuality?: number;
-}>;
+};
 
 export type DecodedImage = {
-  readonly source: CanvasImageSource;
-  readonly width: number;
-  readonly height: number;
-  readonly dispose: () => void;
+  source: CanvasImageSource;
+  width: number;
+  height: number;
+  dispose: () => void;
 };
 
 export type CompressionResult = {
-  blob: Blob;
+  blob: File | Blob;
   finalQuality: number;
-  wasCompressed: boolean;
+  compressed: boolean;
 };
 
 export type CompressionOptions = {
@@ -65,15 +73,15 @@ export type CompressionOptions = {
   compressionStep: number;
 };
 
-export type PreviewSource = Readonly<{
+export type PreviewSource = {
   src: string;
   revoke?: () => void;
-}>;
+};
 
 /**
  * **Note:** When a fallback is not available, **JPEGR** will use the original image.
  */
-export type RuntimeSupport = Readonly<{
+export type RuntimeSupport = {
   /** Fallback availabe: ❌ */
   HTMLCanvasElement: boolean;
   /** Fallback availabe: ❌ */
@@ -88,4 +96,4 @@ export type RuntimeSupport = Readonly<{
   createObjectURL: boolean;
   /** Fallback availabe: ✅ */
   createImageBitmap: boolean;
-}>;
+};

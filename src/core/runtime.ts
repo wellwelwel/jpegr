@@ -6,7 +6,7 @@ export const getRuntimeSupport = (): RuntimeSupport => {
       ? HTMLCanvasElement.prototype
       : null;
 
-  return Object.freeze({
+  return {
     FileReader: typeof FileReader !== 'undefined',
     Blob: typeof Blob !== 'undefined',
     HTMLCanvasElement: typeof HTMLCanvasElement !== 'undefined',
@@ -17,5 +17,5 @@ export const getRuntimeSupport = (): RuntimeSupport => {
       typeof URL.revokeObjectURL === 'function',
     createImageBitmap: typeof createImageBitmap !== 'undefined',
     File: typeof File !== 'undefined',
-  });
+  };
 };

@@ -2,7 +2,7 @@
 
 A browser module to take **all image formats** supported by `HTMLCanvasElement` and convert them to **JPEG** with **size-targeted compression** to meet a configurable maximum output size.
 
-- [**JPEGR Playground**](https://wellwelwel.github.io/jpegr/) 🎮
+- 🎮 [**JPEGR Playground**](https://wellwelwel.github.io/jpegr/)
 
 ---
 
@@ -17,14 +17,14 @@ A browser module to take **all image formats** supported by `HTMLCanvasElement` 
 - [API reference](#api-reference)
   - [Constructor](#constructor)
   - [Methods](#methods)
-  - [Getters](#getters)
   - [Types](#types)
 - [Examples](#examples)
-  - [JavaScript and TypeScript](#javascript-and-typescript)
+  - [JavaScript](#javascript)
     - [Upload to a backend endpoint](#upload-to-a-backend-endpoint)
-  - [React](#%EF%B8%8F-react)
+  - [React](#react)
 - [Troubleshooting](#troubleshooting)
   - [Browser support](#browser-support)
+  - [Debugging](#debugging)
 - [Security notes](#security-notes)
 - [License](#license)
 
@@ -34,10 +34,10 @@ A browser module to take **all image formats** supported by `HTMLCanvasElement` 
 
 ## Key features
 
-- Always outputs **JPEG**.
 - Uses the original image when both format and size are within expectations.
 - Normalizes **EXIF** orientation for **JPEG** inputs _(common "bug" in smartphone photos)_.
-- **Automatic compression** starts from a chosen initial quality and will step down as needed until the output fits the size limit or reaches the minimum quality threshold.
+- Automatic compression starting from a chosen initial quality with granular steps.
+- Auto preview and easy upload to backend endpoints.
 
 ---
 
@@ -47,51 +47,35 @@ A browser module to take **all image formats** supported by `HTMLCanvasElement` 
 npm i jpegr
 ```
 
-- No external dependencies are required.
-
 ---
 
 ## Quick start
 
-### Convert an image file and display a preview
-
-#### From Input
-
 ```ts
 import { JPGER } from 'jpegr';
 
-const input = document.querySelector<HTMLInputElement>('#file')!;
-const jpegr = new JPGER({
-  preview: document.querySelector<HTMLImageElement>('#preview'),
+const preview = document.querySelector<HTMLImageElement>('#preview');
+const input = document.querySelector<HTMLInputElement>('#file');
+const button = document.querySelector<HTMLButtonElement>('#upload');
+
+const jpegr = new JPGER({ preview });
+
+input?.addEventListener('change', () => {
+  jpegr.process(input); // It will automatically show preview ✨
 });
 
-input.addEventListener('change', async () => {
-  await jpegr.fromInput(input);
-});
-```
-
-#### From File
-
-```ts
-import { JPGER } from 'jpegr';
-
-const input = document.querySelector<HTMLInputElement>('#file')!;
-const jpegr = new JPGER({
-  preview: document.querySelector<HTMLImageElement>('#preview'),
-});
-
-input.addEventListener('change', async () => {
-  const file = input.files?.[0];
-  if (!file) {
-    console.error('No file selected.');
-    jpegr.clear();
-
+button?.addEventListener('click', () => {
+  if (!jpegr.status.hasImage || jpegr.status.error) {
+    alert('Upload a valid image to proceed.');
     return;
   }
 
-  await jpegr.fromFile(file);
+  jpegr.upload('/api/upload'); // That's it ⭐️
 });
 ```
+
+- See the [**Examples section**](#examples) for **React** and real-world usage approaches and the [**Overview section**](#overview) for visual example.
+- See the [**./examples**](./examples) directory for complete and functional working examples.
 
 ---
 
@@ -107,7 +91,7 @@ Creates a new processor instance with its own internal cache and configuration d
 import { JPGER } from 'jpegr';
 
 const jpegr = new JPGER({
-  preview: null, // Specify an Image element to preview the processed image
+  preview: null, // Specify an image element to preview the processed image.
   maxSize: 1 * 1024 * 1024,
   minQuality: 0.1,
   maxQuality: 1,
@@ -121,29 +105,21 @@ const jpegr = new JPGER({
 
 ### Methods
 
-#### `fromInput`
+#### `process`
 
-Processes the first file in an `<input type="file">`.
-
-```ts
-const result = await jpegr.fromInput(inputElement, 1024 * 1024);
-```
-
-- Returns `{ success: false, error: "No file selected." }` if the input has no file.
-
-#### `fromFile`
-
-Processes an image `File` and stores the result in memory on success.
+Processes an `HTMLInputElement` _(`<input type="file">`)_ or an image `File | Blob`.
 
 ```ts
-const result = await jpegr.fromFile(file, 1024 * 1024);
+const result = await jpegr.process(inputElement);
 ```
-
-- Returns `{ success: false, error: "No file selected." }` if the input has no file.
 
 #### `upload`
 
 Uploads the cached processed image to a backend URL as multipart form data.
+
+```ts
+const response = await jpegr.upload('/api/upload');
+```
 
 **Options:**
 
@@ -173,42 +149,9 @@ jpegr.clear();
 
 ---
 
-### Getters
-
-#### `image`
-
-- Returns the latest processed image or `null`.
-
-#### `fileSize`
-
-- Returns the processed blob size in bytes. Returns `0` if there is no processed image.
-
-#### `fileSizeFormatted`
-
-- Human-readable file size.
-
-#### `wasConverted`
-
-- Returns `true` if the input file MIME type was not `image/jpeg`.
-
-#### `wasCompressed`
-
-- Returns `true` if the module had to lower the JPEG quality to meet the size limit.
-
-#### `compressionQuality`
-
-- Returns the final quality used for encoding (range `minQuality..1.0`).
-- If no image has been processed, it returns the instance default quality (from the constructor).
-
-#### `metadata`
-
-- Returns full metadata or `null` if no image has been processed.
-
----
-
 ## Examples
 
-### JavaScript and TypeScript
+### JavaScript
 
 ```html
 <input id="file" type="file" accept="image/*" />
@@ -225,7 +168,7 @@ const jpegr = new JPGER({
 });
 
 input.addEventListener('change', async () => {
-  const result = await jpegr.fromInput(input);
+  const result = await jpegr.process(input);
 
   if (!result.success) {
     console.error(result.error);
@@ -245,7 +188,7 @@ import { JPGER } from 'jpegr';
 
 const jpegr = new JPGER();
 
-const result = await jpegr.fromFile(file, 1 * 1024 * 1024);
+const result = await jpegr.process(file);
 if (!result.success) throw new Error(result.error);
 
 await jpegr.upload('/api/upload', {
@@ -257,57 +200,39 @@ await jpegr.upload('/api/upload', {
 ### React
 
 ```tsx
+import type { ProcessResult } from 'jpegr';
 import type { ChangeEvent } from 'react';
 import { JPGER } from 'jpegr';
 import { useRef, useState } from 'react';
 
-type State =
-  | { status: 'idle' }
-  | { status: 'error'; message: string }
-  | { status: 'ready'; previewUrl: string; sizeLabel: string };
+export default () => {
+  const { current: jpegr } = useRef(new JPGER());
+  const [result, setResult] = useState<ProcessResult | null>(null);
 
-export const ImagePreview = () => {
-  const [state, setState] = useState<State>({ status: 'idle' });
-  const jpegrRef = useRef(new JPGER({ maxQuality: 0.9 }));
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const onChange = async (_event: ChangeEvent<HTMLInputElement>) => {
-    const input = inputRef.current;
-    if (!input) return;
-
-    const result = await jpegrRef.current.fromInput(input);
-    if (!result.success) {
-      jpegrRef.current.clear();
-      setState({ status: 'error', message: result.error });
-      return;
-    }
-
-    setState({
-      status: 'ready',
-      previewUrl: result.image.dataUrl,
-      sizeLabel: jpegrRef.current.fileSizeFormatted,
+  const onChange = (event: ChangeEvent<HTMLInputElement>) => {
+    jpegr.process(event.currentTarget).then((data) => {
+      if (!data.success) jpegr.clear();
+      setResult(data);
     });
   };
 
   return (
-    <div style={{ display: 'grid', gap: 12, maxWidth: 420 }}>
-      <input ref={inputRef} type='file' accept='image/*' onChange={onChange} />
-
-      {state.status === 'error' ? <p role='alert'>{state.message}</p> : null}
-
-      {state.status === 'ready' ? (
-        <img
-          src={state.previewUrl}
-          alt='Selected image preview'
-          style={{ width: '100%', borderRadius: 8 }}
-        />
-      ) : null}
-
-      {state.status === 'ready' ? <p>{state.sizeLabel}</p> : null}
-    </div>
+    <>
+      <input type='file' accept='image/*' onChange={onChange} />
+      {result?.image && (
+        <img src={result.image.src} alt='Selected image preview' />
+      )}
+      <pre>{JSON.stringify(result, null, 2)}</pre>
+    </>
   );
 };
 ```
+
+#### Overview
+
+<img src="./.github/assets/sample.png" alt="React example overview" width="360" />
+
+- Check this example in [**./examples/vite**](./examples/vite/).
 
 ---
 
@@ -325,7 +250,7 @@ If some of these features are unavailable in the browser, the original image wil
 
 > [!TIP]
 >
-> If you need to prevent this behavior, you can use the static method `JPGER.getRuntimeSupport()` to check for support before attempting image processing, for example:
+> If you need to prevent this behavior, you can use the static method `JPGER.getRuntimeSupport()` to check for **JPEGR** support before attempting image processing, for example:
 >
 > ```ts
 > import { JPGER } from 'jpegr';
@@ -337,36 +262,24 @@ If some of these features are unavailable in the browser, the original image wil
 
 ### Debugging
 
-#### `canProcess` _(static method)_
-
-Returns whether the current browser supports image processing.
-
-```ts
-import { JPGER } from 'jpegr';
-
-JPGER.canProcess(); // true or false
-```
-
-#### `getRuntimeSupport` _(static method)_
-
-Returns an object describing the current browser's support for image processing features.
+Check feature availability in browsers:
 
 ```ts
 import { JPGER } from 'jpegr';
 
 const support = JPGER.getRuntimeSupport();
-// {
-//   FileReader: true,
-//   Blob: true,
-//   File: true,
-//   HTMLCanvasElement: true,
-//   canvasToBlob: true,
-//   createObjectURL: true,
-//   createImageBitmap: true
-// }
+/**
+ * {
+ *   FileReader: true,
+ *   Blob: true,
+ *   File: true,
+ *   HTMLCanvasElement: true,
+ *   canvasToBlob: true,
+ *   createObjectURL: true,
+ *   createImageBitmap: true
+ * }
+ */
 ```
-
-**Use case:** Check feature availability before attempting image processing, or provide fallback UI for unsupported browsers.
 
 ---
 
@@ -380,4 +293,4 @@ const support = JPGER.getRuntimeSupport();
 ## License
 
 **JPEGR** is under the [**MIT License**](https://github.com/wellwelwel/jpegr/blob/main/LICENSE).<br />
-Copyright © 2025-present [Weslley Araújo](https://github.com/wellwelwel) and **JPEGR** [contributors](https://github.com/wellwelwel/jpegr/graphs/contributors).
+Copyright © 2025-present [**Weslley Araújo**](https://github.com/wellwelwel) and **JPEGR** [**contributors**](https://github.com/wellwelwel/jpegr/graphs/contributors).

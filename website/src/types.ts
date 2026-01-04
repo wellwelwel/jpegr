@@ -1,7 +1,7 @@
 import type { ChangeEvent } from 'react';
 import type { JPGEROptions, RuntimeSupport } from '../../src/core/types.js';
 
-export type JPGERPlaygroundViewModel = Readonly<{
+export type JPGERPlaygroundViewModel = {
   // Refs
   fileInputRef: React.RefObject<HTMLInputElement | null>;
 
@@ -15,8 +15,8 @@ export type JPGERPlaygroundViewModel = Readonly<{
   compressionStep: number;
   minQuality: number;
 
-  selectedFile: File | null;
-  originalObjectUrl: string | null;
+  selectedFile: File | Blob | null;
+  objectUrl: string | null;
   processedObjectUrl: string | null;
 
   lastDebug: RunDebug | null;
@@ -28,7 +28,7 @@ export type JPGERPlaygroundViewModel = Readonly<{
 
   // Derived display values
   originalSizeText: string;
-  processedSizeText: string;
+  fileSizeText: string;
 
   effectiveMaxSizeText: string;
 
@@ -48,26 +48,33 @@ export type JPGERPlaygroundViewModel = Readonly<{
   onmaxQualityChange: (event: ChangeEvent<HTMLInputElement>) => void;
   onCompressionStepChange: (event: ChangeEvent<HTMLInputElement>) => void;
   onminQualityChange: (event: ChangeEvent<HTMLInputElement>) => void;
-}>;
+};
 
-export type RunDebug = Readonly<{
+export type RunDebug = {
   startedAtIso: string;
   durationMs: number;
-  config: Readonly<{
-    jpegrOptions: Omit<Required<JPGEROptions>, 'preview'>;
-  }>;
-  inputFile: Readonly<{
+  config: {
+    jpegrOptions: Omit<JPGEROptions, 'preview'>;
+  };
+  inputFile: {
     name: string;
     type: string;
     size: number;
     lastModified: number;
-  }>;
-  output: Readonly<{
+  };
+  output: {
     success: boolean;
     error: string | null;
     metadata: unknown | null;
     processedBlobType: string | null;
     processedBlobSize: number | null;
     processedDataUrlLength: number | null;
-  }>;
-}>;
+  };
+};
+
+export type Status = {
+  isBusy: boolean;
+  error: string | null;
+  info: string | null;
+  lastDebug: RunDebug | null;
+};

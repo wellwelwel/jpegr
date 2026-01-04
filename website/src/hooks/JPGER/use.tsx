@@ -1,12 +1,10 @@
 import type { ChangeEvent } from 'react';
-import type {
-  JPGEROptions,
-  ProcessResult,
-} from '../../../../src/core/types.js';
-import type { JPGERPlaygroundViewModel, RunDebug } from '../../types.js';
+import type { JPGEROptions, ProcessResult } from '../../../../src/index.js';
+import type { JPGERPlaygroundViewModel, Status } from '../../types.js';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { buildPreviewSrc, formatBytes } from '../../../../src/core/utils.js';
 import { JPGER } from '../../../../src/index.js';
+import { DEFAULT_OPTIONS } from './configs.js';
 import {
   buildJPGEROptions,
   getCanvasOutputStrategy,
@@ -19,139 +17,143 @@ import {
 export const usePlayground = (): JPGERPlaygroundViewModel => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // JPGER configurable options
-  const [defaultMaxSizeMb, setDefaultMaxSizeMb] = useState<number>(1);
-  const [maxQuality, setmaxQuality] = useState<number>(1);
-  const [compressionStep, setCompressionStep] = useState<number>(0.1);
-  const [minQuality, setminQuality] = useState<number>(0.1);
+  const [options, setOptions] = useState(DEFAULT_OPTIONS);
+  const [selectedFile, setSelectedFile] = useState<File | Blob | null>(null);
+  const [objectUrl, setObjectUrl] = useState<string | null>(null);
+  const [results, setResults] = useState<ProcessResult | null>(null);
+  const [status, setStatus] = useState<Status>({
+    isBusy: false,
+    error: null,
+    info: null,
+    lastDebug: null,
+  });
 
-  // File and previews
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [originalObjectUrl, setOriginalObjectUrl] = useState<string | null>(
-    null
-  );
-  const [processedObjectUrl, setProcessedObjectUrl] = useState<string | null>(
-    null
-  );
-
-  // Status and debug
-  const [isBusy, setIsBusy] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const [info, setInfo] = useState<string | null>(null);
-  const [lastDebug, setLastDebug] = useState<RunDebug | null>(null);
-
-  const jpegrOptions = useMemo<Omit<Required<JPGEROptions>, 'preview'>>(
+  const jpegrOptions = useMemo<Omit<JPGEROptions, 'preview'>>(
     () =>
       buildJPGEROptions({
-        defaultMaxSizeMb,
-        maxQuality,
-        compressionStep,
-        minQuality,
+        defaultMaxSizeMb: options.defaultMaxSizeMb,
+        maxQuality: options.maxQuality,
+        compressionStep: options.compressionStep,
+        minQuality: options.minQuality,
       }),
-    [defaultMaxSizeMb, maxQuality, compressionStep, minQuality]
+    [options]
   );
 
   const jpegr = useMemo(() => new JPGER(jpegrOptions), [jpegrOptions]);
 
+  const processedObjectUrl = results?.image?.src ?? null;
+
   // When the JPGER config changes, keep the selected file but invalidate the previous result (to avoid confusion).
   useEffect(() => {
-    setError(null);
+    setStatus((prev) => ({
+      ...prev,
+      error: null,
+      lastDebug: null,
+      info: selectedFile
+        ? 'By changing configurations, click "Process" to refresh the result.'
+        : null,
+    }));
 
-    setProcessedObjectUrl((prev) => {
-      revokeObjectUrl(prev);
-      return null;
-    });
-
-    setLastDebug(null);
     jpegr.clear();
+    setResults(null);
+  }, [jpegr, jpegrOptions, selectedFile]);
 
-    if (selectedFile) {
-      setInfo(
-        'By changing configurations, click “Process” to refresh the result.'
-      );
-    }
-  }, [jpegr, selectedFile]);
-
-  // Cleanup object URLs
+  // Cleanup object URL
   useEffect(() => {
     return () => {
-      revokeObjectUrl(originalObjectUrl);
-      revokeObjectUrl(processedObjectUrl);
+      revokeObjectUrl(objectUrl);
     };
-  }, [originalObjectUrl, processedObjectUrl]);
+  }, [objectUrl]);
 
-  const runProcess = async (file: File): Promise<void> => {
+  const runProcess = async (file: File | Blob): Promise<void> => {
     const configError = validateJPGEROptions(jpegrOptions);
     if (configError) {
-      setError(configError);
+      setStatus((prev) => ({ ...prev, error: configError }));
       return;
     }
 
-    setIsBusy(true);
-    setError(null);
-    setInfo(null);
+    setStatus((prev) => ({
+      ...prev,
+      isBusy: true,
+      error: null,
+      info: null,
+    }));
 
     const start = performance.now();
     const startedAtIso = new Date().toISOString();
 
-    const result: ProcessResult = await jpegr.fromFile(file);
+    const result: ProcessResult = await jpegr.process(file);
     const durationMs = Math.round(performance.now() - start);
 
     if (result.success) {
-      const processedPreview = await buildPreviewSrc(result.image.blob);
-      setProcessedObjectUrl((prev) => {
-        revokeObjectUrl(prev);
-        return processedPreview.src;
-      });
-
-      setLastDebug({
-        startedAtIso,
-        durationMs,
-        config: {
-          jpegrOptions,
+      setResults(result);
+      setStatus((prev) => ({
+        ...prev,
+        lastDebug: {
+          startedAtIso,
+          durationMs,
+          config: {
+            jpegrOptions,
+          },
+          inputFile: {
+            name:
+              'name' in file && typeof file.name === 'string'
+                ? file.name
+                : 'unknown',
+            lastModified:
+              'lastModified' in file && typeof file.lastModified === 'number'
+                ? file.lastModified
+                : 0,
+            type: file.type,
+            size: file.size,
+          },
+          output: {
+            success: true,
+            error: null,
+            metadata: result.image!.metadata.processed,
+            processedBlobType: result.image!.file.type,
+            processedBlobSize: result.image!.file.size,
+            processedDataUrlLength: result.image!.src.length,
+          },
         },
-        inputFile: {
-          name: file.name,
-          type: file.type,
-          size: file.size,
-          lastModified: file.lastModified,
-        },
-        output: {
-          success: true,
-          error: null,
-          metadata: result.image.metadata,
-          processedBlobType: result.image.blob.type,
-          processedBlobSize: result.image.blob.size,
-          processedDataUrlLength: result.image.dataUrl.length,
-        },
-      });
+      }));
     } else {
-      setLastDebug({
-        startedAtIso,
-        durationMs,
-        config: {
-          jpegrOptions,
-        },
-        inputFile: {
-          name: file.name,
-          type: file.type,
-          size: file.size,
-          lastModified: file.lastModified,
-        },
-        output: {
-          success: false,
-          error: result.error,
-          metadata: null,
-          processedBlobType: null,
-          processedBlobSize: null,
-          processedDataUrlLength: null,
-        },
-      });
+      setResults(null);
 
-      setError(result.error);
+      setStatus((prev) => ({
+        ...prev,
+        lastDebug: {
+          startedAtIso,
+          durationMs,
+          config: {
+            jpegrOptions,
+          },
+          inputFile: {
+            name:
+              'name' in file && typeof file.name === 'string'
+                ? file.name
+                : 'unknown',
+            lastModified:
+              'lastModified' in file && typeof file.lastModified === 'number'
+                ? file.lastModified
+                : 0,
+            type: file.type,
+            size: file.size,
+          },
+          output: {
+            success: false,
+            error: result.error!,
+            metadata: null,
+            processedBlobType: null,
+            processedBlobSize: null,
+            processedDataUrlLength: null,
+          },
+        },
+        error: result.error!,
+      }));
     }
 
-    setIsBusy(false);
+    setStatus((prev) => ({ ...prev, isBusy: false }));
   };
 
   const onSelectFile = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -161,63 +163,59 @@ export const usePlayground = (): JPGERPlaygroundViewModel => {
     const file = files[0] ?? null;
     if (!file) return;
 
-    setError(null);
-    setInfo(null);
-    setLastDebug(null);
+    setStatus((prev) => ({
+      ...prev,
+      error: null,
+      info: null,
+      lastDebug: null,
+    }));
     setSelectedFile(file);
 
     const originalPreview = await buildPreviewSrc(file);
-    setOriginalObjectUrl((prev) => {
+    setObjectUrl((prev) => {
       revokeObjectUrl(prev);
       return originalPreview.src;
     });
 
-    setProcessedObjectUrl((prev) => {
-      revokeObjectUrl(prev);
-      return null;
-    });
-
     jpegr.clear();
+    setResults(null);
     await runProcess(file);
   };
 
   const onReset = () => {
-    setError(null);
-    setInfo(null);
-    setLastDebug(null);
-    setSelectedFile(null);
-    setDefaultMaxSizeMb(1);
-    setmaxQuality(1);
-    setCompressionStep(0.1);
-    setminQuality(0.1);
-
-    setOriginalObjectUrl((prev) => {
-      revokeObjectUrl(prev);
-      return null;
+    setStatus({
+      isBusy: false,
+      error: null,
+      info: null,
+      lastDebug: null,
     });
+    setSelectedFile(null);
+    setOptions(DEFAULT_OPTIONS);
 
-    setProcessedObjectUrl((prev) => {
+    setObjectUrl((prev) => {
       revokeObjectUrl(prev);
       return null;
     });
 
     jpegr.clear();
+    setResults(null);
 
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  const effectiveMaxSizeBytes = jpegrOptions.maxSize;
-  const hasProcessed = !!jpegr.image;
-  const canProcess = !!selectedFile && !isBusy;
+  const effectiveMaxSizeBytes = jpegrOptions.maxSize ?? 0;
+  const hasProcessed = results?.success === true;
+  const canProcess = !!selectedFile && !status.isBusy;
   const originalSizeText = selectedFile ? formatBytes(selectedFile.size) : '';
   const effectiveMaxSizeText = formatBytes(effectiveMaxSizeBytes);
-  const finalSizeText = hasProcessed ? jpegr.fileSizeFormatted : '—';
+  const finalSizeText = hasProcessed
+    ? (results.image!.metadata.processed?.sizeFormatted ?? '—')
+    : '—';
 
-  const processedSizeText = hasProcessed
-    ? formatBytes(jpegr.image?.blob.size ?? 0)
+  const fileSizeText = hasProcessed
+    ? formatBytes(results.image!.file.size)
     : '';
-
-  const resultText = isBusy
+  const resultText = status.isBusy
     ? 'Processing…'
     : hasProcessed
       ? 'OK'
@@ -226,64 +224,77 @@ export const usePlayground = (): JPGERPlaygroundViewModel => {
         : 'Select a file';
 
   const convertedText = hasProcessed
-    ? jpegr.wasConverted
+    ? results.image!.metadata.processed?.converted
       ? 'Yes'
       : 'No'
     : '—';
   const compressedText = hasProcessed
-    ? jpegr.wasCompressed
+    ? results.image!.metadata.processed?.compressed
       ? 'Yes'
       : 'No'
     : '—';
   const finalQualityText = hasProcessed
-    ? jpegr.compressionQuality.toFixed(2)
+    ? results.image!.metadata.processed?.quality.toFixed(2) || '—'
     : '—';
 
   const onDefaultMaxSizeMbChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setDefaultMaxSizeMb(Number(event.currentTarget.value));
+    setOptions((prev) => ({
+      ...prev,
+      defaultMaxSizeMb: Number(event.currentTarget.value),
+    }));
   };
 
   const onmaxQualityChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setmaxQuality(Number(event.currentTarget.value));
+    setOptions((prev) => ({
+      ...prev,
+      maxQuality: Number(event.currentTarget.value),
+    }));
   };
 
   const onCompressionStepChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setCompressionStep(Number(event.currentTarget.value));
+    setOptions((prev) => ({
+      ...prev,
+      compressionStep: Number(event.currentTarget.value),
+    }));
   };
 
   const onminQualityChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setminQuality(Number(event.currentTarget.value));
+    setOptions((prev) => ({
+      ...prev,
+      minQuality: Number(event.currentTarget.value),
+    }));
   };
 
   const onProcess = async () => {
     if (!selectedFile) return;
     await runProcess(selectedFile);
   };
+  results?.success && console.log(results.image);
 
   return {
     fileInputRef,
 
-    isBusy,
-    error,
-    info,
+    isBusy: status.isBusy,
+    error: status.error,
+    info: status.info,
 
-    defaultMaxSizeMb,
-    maxQuality,
-    compressionStep,
-    minQuality,
+    defaultMaxSizeMb: options.defaultMaxSizeMb,
+    maxQuality: options.maxQuality,
+    compressionStep: options.compressionStep,
+    minQuality: options.minQuality,
 
     selectedFile,
-    originalObjectUrl,
+    objectUrl,
     processedObjectUrl,
 
-    lastDebug,
+    lastDebug: status.lastDebug,
 
     runtimeSupport: RUNTIME_SUPPORT,
     userAgent: getUserAgent(),
     canvasOutputStrategy: getCanvasOutputStrategy(RUNTIME_SUPPORT),
 
     originalSizeText,
-    processedSizeText,
+    fileSizeText,
 
     effectiveMaxSizeText,
 

@@ -1,6 +1,8 @@
 import type { PreviewSource } from './types.js';
 import { getRuntimeSupport } from './runtime.js';
 
+export const supports = getRuntimeSupport();
+
 export const supportsImageProcessing = (): boolean => {
   const supports = getRuntimeSupport();
 
@@ -12,7 +14,7 @@ export const supportsImageProcessing = (): boolean => {
 };
 
 export const processDataUrl = (
-  blob: Blob | File,
+  file: File | Blob,
   errorMessage: string
 ): Promise<string> => {
   return new Promise((resolve, reject) => {
@@ -24,37 +26,36 @@ export const processDataUrl = (
         : reject(new Error(errorMessage));
     };
     reader.onerror = () => reject(reader.error);
-    reader.readAsDataURL(blob);
+    reader.readAsDataURL(file);
   });
 };
 
 export const buildPreviewSrc = async (
   source: File | Blob
 ): Promise<PreviewSource> => {
-  try {
-    if (
-      typeof URL !== 'undefined' &&
-      URL.createObjectURL &&
-      URL.revokeObjectURL
-    ) {
-      const src = URL.createObjectURL(source);
-      return {
-        src,
-        revoke: () => URL.revokeObjectURL(src),
-      };
-    }
-  } catch {}
+  if (supports.createObjectURL) {
+    const src = URL.createObjectURL(source);
+    return {
+      src,
+      revoke: () => URL.revokeObjectURL(src),
+    };
+  }
+
+  // Fallback (Blob)
+  if (supports.Blob && source instanceof Blob) {
+    return {
+      src: await processDataUrl(source, 'Failed to convert blob'),
+    };
+  }
 
   // Fallback (File)
-  if (source instanceof File)
+  if (supports.File && source instanceof File) {
     return {
       src: await processDataUrl(source, 'Failed to read file'),
     };
+  }
 
-  // Fallback (Blob)
-  return {
-    src: await processDataUrl(source, 'Failed to convert blob'),
-  };
+  throw new Error('No supported methods to build preview source.');
 };
 
 export const formatBytes = (bytes: number): string => {

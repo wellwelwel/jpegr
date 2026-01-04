@@ -1,16 +1,15 @@
 import type {
   JPGEROptions,
   ProcessedImage,
-  ProcessedImageMetadata,
   ProcessResult,
   RuntimeSupport,
 } from './core/types.js';
 import { compressToFit } from './core/compressor.js';
 import { decodeImage } from './core/decoder.js';
-import { getRuntimeSupport } from './core/runtime.js';
 import {
   buildPreviewSrc,
   formatBytes,
+  supports,
   supportsImageProcessing,
 } from './core/utils.js';
 
@@ -23,23 +22,10 @@ const DEFAULT_MIN_QUALITY = 0.1;
  * **JPGER** - Browser image processing module.
  */
 export class JPGER {
-  /**
-   * Returns browser runtime support for image processing features.
-   */
-  static getRuntimeSupport(): RuntimeSupport {
-    return getRuntimeSupport();
-  }
-
-  /**
-   * Returns whether the current browser supports image processing.
-   */
-  static canProcess(): boolean {
-    return supportsImageProcessing();
-  }
-
   private processedImage: ProcessedImage | null = null;
-  private previewElement: HTMLImageElement | null = null;
+  private error: string | null = null;
 
+  private readonly previewElement: HTMLImageElement | null = null;
   private readonly maxSize: number;
   private readonly maxQuality: number;
   private readonly compressionStep: number;
@@ -55,41 +41,181 @@ export class JPGER {
     this.syncPreview();
   }
 
-  get image(): ProcessedImage | null {
-    return this.processedImage;
+  /**
+   * Returns browser runtime support for image processing features.
+   */
+  static getRuntimeSupport(): RuntimeSupport {
+    return supports;
   }
 
-  get fileSize(): number {
-    return this.processedImage?.blob.size ?? 0;
+  /**
+   * Returns whether the current browser supports image processing.
+   */
+  static canProcess(): boolean {
+    return supportsImageProcessing();
   }
 
-  get fileSizeFormatted(): string {
-    return formatBytes(this.fileSize);
+  /**
+   * Processes an image from either a File or an HTMLInputElement.
+   */
+  async process(
+    input: File | Blob | HTMLInputElement,
+    maxSize = this.maxSize
+  ): Promise<ProcessResult> {
+    if (input instanceof HTMLInputElement)
+      return this.fromInput(input, maxSize);
+
+    if (
+      (supports.File && input instanceof File) ||
+      (supports.Blob && input instanceof Blob)
+    )
+      return this.fromFile(input, maxSize);
+
+    throw new Error('Invalid input type. Expected File or HTMLInputElement.');
   }
 
-  get wasConverted(): boolean {
-    return this.processedImage?.metadata.wasConverted ?? false;
-  }
-
-  get wasCompressed(): boolean {
-    return this.processedImage?.metadata.wasCompressed ?? false;
-  }
-
-  get compressionQuality(): number {
-    return this.processedImage?.metadata.compressionQuality ?? this.maxQuality;
-  }
-
-  get metadata(): ProcessedImageMetadata | null {
-    return this.processedImage?.metadata ?? null;
-  }
-
+  /**
+   * Clears the current processed image and frees associated resources.
+   */
+  /**
+   * Clears the current processed image, error state, and frees associated resources.
+   */
   clear(): void {
     this.processedImage?.revoke?.();
     this.processedImage = null;
+    this.error = null;
     this.syncPreview();
   }
 
-  async fromInput(
+  /**
+   * Uploads the processed image to the specified URL using a POST request by default.
+   */
+  async upload(
+    url: string,
+    options?: {
+      field?: string;
+      name?: string;
+      init?: RequestInit;
+    }
+  ): Promise<Response> {
+    if (!this.processedImage) throw new Error('No processed image to upload.');
+
+    const {
+      field = 'image',
+      name = 'image.jpeg',
+      init,
+    } = options ?? Object.create(null);
+
+    const formData = new FormData();
+    formData.append(field, this.processedImage.file, name);
+
+    const response = await fetch(url, {
+      ...init,
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) throw new Error('Upload failed');
+
+    return response;
+  }
+
+  /**
+   * Returns the current JPGER instance status.
+   */
+  get status() {
+    return {
+      hasImage: !!this.processedImage,
+      error: this.error,
+    };
+  }
+
+  private async fromFile(
+    file: File | Blob,
+    maxSize = this.maxSize
+  ): Promise<ProcessResult> {
+    let decoded = null;
+
+    try {
+      const canProcess = supportsImageProcessing();
+      const originalSize = file.size;
+      const originalType = file.type;
+
+      let blob: File | Blob;
+      let converted = false;
+      let compressed = false;
+      let finalQuality = this.maxQuality;
+
+      // Fast path: JPEG within size limit OR browser doesn't support processing
+      const isJpegWithinLimit =
+        file.type === 'image/jpeg' && file.size <= maxSize;
+
+      if (isJpegWithinLimit || !canProcess) {
+        // Pass through original file
+        // Use original on unsupported browsers
+        blob = file;
+      } else {
+        // Decode and compress
+        converted = file.type !== 'image/jpeg';
+        decoded = await decodeImage(file);
+
+        const result = await compressToFit(decoded, {
+          maxSize,
+          originalSize,
+          maxQuality: this.maxQuality,
+          minQuality: this.minQuality,
+          compressionStep: this.compressionStep,
+        });
+
+        blob = result.blob;
+        compressed = result.compressed;
+        finalQuality = result.finalQuality;
+      }
+
+      this.processedImage?.revoke?.();
+
+      const previewSrc = await buildPreviewSrc(blob);
+      const processed: ProcessedImage = {
+        file: blob,
+        src: previewSrc.src,
+        metadata: {
+          original: {
+            size: originalSize,
+            sizeFormatted: formatBytes(originalSize),
+            type: originalType,
+          },
+          processed: {
+            size: blob.size,
+            sizeFormatted: formatBytes(blob.size),
+            type: blob.type,
+            converted,
+            compressed,
+            quality: finalQuality,
+          },
+        },
+      };
+
+      this.processedImage = processed;
+      this.error = null;
+      this.syncPreview();
+
+      return { success: true, error: null, image: processed };
+    } catch (error) {
+      console.error(error);
+
+      this.error =
+        error instanceof Error ? error.message : 'Failed to process image.';
+
+      return {
+        success: false,
+        error: this.error,
+      };
+    } finally {
+      decoded?.dispose();
+    }
+  }
+
+  private async fromInput(
     input: HTMLInputElement,
     maxSize = this.maxSize
   ): Promise<ProcessResult> {
@@ -103,109 +229,6 @@ export class JPGER {
     return this.fromFile(file, maxSize);
   }
 
-  async fromFile(file: File, maxSize = this.maxSize): Promise<ProcessResult> {
-    let decoded = null;
-
-    try {
-      const canProcess = supportsImageProcessing();
-      const originalSize = file.size;
-      const originalType = file.type;
-
-      let blob: Blob;
-      let wasConverted = false;
-      let wasCompressed = false;
-      let finalQuality = this.maxQuality;
-
-      // Fast path: JPEG within size limit OR browser doesn't support processing
-      const isJpegWithinLimit =
-        file.type === 'image/jpeg' && file.size <= maxSize;
-
-      if (isJpegWithinLimit || !canProcess) {
-        // Pass through original file
-        // Use original on unsupported browsers
-        blob = file;
-      } else {
-        // Decode and compress
-        wasConverted = file.type !== 'image/jpeg';
-        decoded = await decodeImage(file);
-
-        const result = await compressToFit(decoded, {
-          maxSize,
-          originalSize,
-          maxQuality: this.maxQuality,
-          minQuality: this.minQuality,
-          compressionStep: this.compressionStep,
-        });
-
-        blob = result.blob;
-        wasCompressed = result.wasCompressed;
-        finalQuality = result.finalQuality;
-      }
-
-      this.processedImage?.revoke?.();
-
-      const previewSrc = await buildPreviewSrc(blob);
-      const processed: ProcessedImage = Object.freeze({
-        blob,
-        dataUrl: previewSrc.src,
-        metadata: Object.freeze({
-          originalSize,
-          originalType,
-          processedSize: blob.size,
-          wasConverted,
-          wasCompressed,
-          compressionQuality: finalQuality,
-        }),
-        revoke: previewSrc.revoke,
-      });
-
-      this.processedImage = processed;
-      this.syncPreview();
-
-      return { success: true, image: processed };
-    } catch (error) {
-      return {
-        success: false,
-        error:
-          error instanceof Error ? error.message : 'Failed to process image.',
-      };
-    } finally {
-      decoded?.dispose();
-    }
-  }
-
-  async upload(
-    url: string,
-    options?: {
-      field?: string;
-      name?: string;
-      init?: RequestInit;
-    }
-  ): Promise<Response> {
-    if (!this.processedImage) {
-      throw new Error('No processed image to upload.');
-    }
-
-    const {
-      field = 'image',
-      name = 'image.jpeg',
-      init,
-    } = options ?? Object.create(null);
-
-    const formData = new FormData();
-    formData.append(field, this.processedImage.blob, name);
-
-    const response = await fetch(url, {
-      ...init,
-      method: 'POST',
-      body: formData,
-    });
-
-    if (!response.ok) throw new Error('Upload failed');
-
-    return response;
-  }
-
   private syncPreview(): void {
     const element = this.previewElement;
     if (!element) return;
@@ -217,15 +240,13 @@ export class JPGER {
       return;
     }
 
-    element.src = this.processedImage.dataUrl;
+    element.src = this.processedImage.src;
     element.alt = 'Image preview';
   }
 }
 
 export type {
   JPGEROptions,
-  ProcessedImage,
-  ProcessedImageMetadata,
   ProcessResult,
   RuntimeSupport,
 } from './core/types.js';

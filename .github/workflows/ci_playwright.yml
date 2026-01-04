@@ -34,7 +34,7 @@ jobs:
       - name: Install dependencies
         run: |
           npm ci
-          cd website && npm ci
+          npm ci --prefix website
 
       - name: Cache Playwright browsers
         uses: actions/cache@v4
