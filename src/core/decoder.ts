@@ -1,5 +1,9 @@
 import type { DecodedImage } from './types.js';
-import { processDataUrl } from './utils.js';
+import {
+  processDataUrl,
+  processDataUrlViaResponse,
+  supports,
+} from './utils.js';
 
 const loadImage = (src: string): Promise<HTMLImageElement> => {
   return new Promise((resolve, reject) => {
@@ -9,6 +13,13 @@ const loadImage = (src: string): Promise<HTMLImageElement> => {
     image.onerror = () => reject(new Error('Invalid image file'));
     image.src = src;
   });
+};
+
+const getDataUrl = async (file: File | Blob): Promise<string> => {
+  if (supports.FileReader) return processDataUrl(file, 'Failed to read file');
+  if (supports.Response) return processDataUrlViaResponse(file);
+
+  throw new Error('No supported methods to read file as data URL.');
 };
 
 export const decodeImage = async (file: File | Blob): Promise<DecodedImage> => {
@@ -28,7 +39,7 @@ export const decodeImage = async (file: File | Blob): Promise<DecodedImage> => {
   }
 
   // Fallback
-  const dataUrl = await processDataUrl(file, 'Failed to read file');
+  const dataUrl = await getDataUrl(file);
   const image = await loadImage(dataUrl);
 
   return {

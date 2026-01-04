@@ -15,7 +15,7 @@ export const disableGlobal = (
     case 'toBlob':
       return 'HTMLCanvasElement.prototype.toBlob = undefined;';
     case 'FileReader':
-      return 'delete window.FileReader; URL.createObjectURL = undefined; URL.revokeObjectURL = undefined;';
+      return 'delete window.FileReader; URL.createObjectURL = undefined; URL.revokeObjectURL = undefined; delete window.Blob; HTMLCanvasElement.prototype.toBlob = undefined; delete window.createImageBitmap; delete window.Uint8Array;';
     case 'Unit8Array':
       return 'delete window.Uint8Array; URL.createObjectURL = undefined; URL.revokeObjectURL = undefined;';
     default:
