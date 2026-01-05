@@ -159,7 +159,7 @@ export const usePlayground = (): JPGERPlaygroundViewModel => {
   };
 
   const onSelectFile = async (event: ChangeEvent<HTMLInputElement>) => {
-    const files = event.currentTarget.files;
+    const files = event.target.files;
     if (!files || files.length === 0) return;
 
     const file = files[0] ?? null;
@@ -242,28 +242,28 @@ export const usePlayground = (): JPGERPlaygroundViewModel => {
   const onDefaultMaxSizeMbChange = (event: ChangeEvent<HTMLInputElement>) => {
     setOptions((prev) => ({
       ...prev,
-      defaultMaxSizeMb: Number(event.currentTarget.value),
+      defaultMaxSizeMb: Number(event.target.value),
     }));
   };
 
   const onmaxQualityChange = (event: ChangeEvent<HTMLInputElement>) => {
     setOptions((prev) => ({
       ...prev,
-      maxQuality: Number(event.currentTarget.value),
+      maxQuality: Number(event.target.value),
     }));
   };
 
   const onCompressionStepChange = (event: ChangeEvent<HTMLInputElement>) => {
     setOptions((prev) => ({
       ...prev,
-      compressionStep: Number(event.currentTarget.value),
+      compressionStep: Number(event.target.value),
     }));
   };
 
   const onminQualityChange = (event: ChangeEvent<HTMLInputElement>) => {
     setOptions((prev) => ({
       ...prev,
-      minQuality: Number(event.currentTarget.value),
+      minQuality: Number(event.target.value),
     }));
   };
 
