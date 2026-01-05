@@ -45,25 +45,25 @@ export const ImagePreview = () => {
 
   return (
     <>
-      <header>
-        <a
-          href='https://github.com/wellwelwel/jpegr'
-          target='_blank'
-          rel='noopener noreferrer'
-        >
-          <img src='/jpegr/images/github.svg' />
-          GitHub Repository
-        </a>
-      </header>
       <div className='jpegr-page'>
-        <header className='jpegr-header'>
+        <header>
+          <a
+            href='https://github.com/wellwelwel/jpegr'
+            target='_blank'
+            rel='noopener noreferrer'
+          >
+            <img src='/jpegr/images/github.svg' />
+            GitHub Repository
+          </a>
+        </header>
+        <div className='jpegr-header'>
           <h1 className='jpegr-title'>JPGER Playground</h1>
           <p className='jpegr-subtitle'>
             Select an image, adjust the{' '}
             <code className='jpegr-mono'>JPGER</code> options, and view the full
             processing output.
           </p>
-        </header>
+        </div>
 
         <div className='jpegr-grid'>
           <section className='jpegr-card'>
@@ -392,6 +392,37 @@ export const ImagePreview = () => {
             </section>
           </aside>
         </div>
+
+        <footer>
+          <a
+            href='https://github.com/wellwelwel/jpegr'
+            target='_blank'
+            rel='noreferrer'
+          >
+            ⭐️ Give it a Star
+          </a>
+          <a
+            href='https://github.com/wellwelwel/jpegr/blob/main/LICENSE'
+            target='_blank'
+            rel='noreferrer'
+          >
+            📖 MIT License
+          </a>
+          <a
+            href='https://github.com/wellwelwel/jpegr/issues'
+            target='_blank'
+            rel='noreferrer'
+          >
+            🔧 Report a Bug
+          </a>
+          <a
+            href='https://github.com/sponsors/wellwelwel'
+            target='_blank'
+            rel='noreferrer'
+          >
+            ☕️ Buy Me a Coffee
+          </a>
+        </footer>
       </div>
     </>
   );
