@@ -45,6 +45,7 @@ export const buildJPGEROptions = (input: {
   compressionStep: number;
   minQuality: number;
   forceCompression: boolean;
+  backgroundColor: string;
 }): Omit<JPGEROptions, 'preview'> => {
   const normalizedDefaultMaxSizeMb = clampNumber(
     input.defaultMaxSizeMb,
@@ -68,6 +69,7 @@ export const buildJPGEROptions = (input: {
     compressionStep: normalizedCompressionStep,
     minQuality: normalizedMinQuality,
     forceCompression: input.forceCompression,
+    backgroundColor: input.backgroundColor,
   };
 };
 

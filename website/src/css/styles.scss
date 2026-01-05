@@ -165,6 +165,12 @@ button {
   color: var(--jpegr-subtle);
 }
 
+hr {
+  border-color: #000;
+  margin-block: 15px;
+  opacity: 0.5;
+}
+
 .jpegr-input {
   width: 100%;
   padding: 10px 10px;
@@ -175,6 +181,25 @@ button {
   outline: none;
   max-width: 100%;
   min-width: 0;
+
+  &[type='color'] {
+    height: 44px;
+    cursor: pointer;
+
+    &::-webkit-color-swatch-wrapper {
+      padding: 0;
+    }
+
+    &::-webkit-color-swatch {
+      border: none;
+      border-radius: 7px;
+    }
+
+    &::-moz-color-swatch {
+      border: none;
+      border-radius: 7px;
+    }
+  }
 }
 
 .jpegr-input--file {
