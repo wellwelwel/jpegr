@@ -31,6 +31,7 @@ export class JPGER {
   private readonly compressionStep: number;
   private readonly minQuality: number;
   private readonly forceCompression: boolean;
+  private readonly backgroundColor?: string;
 
   constructor(options: JPGEROptions = Object.create(null)) {
     this.previewElement = options.preview ?? null;
@@ -39,6 +40,7 @@ export class JPGER {
     this.compressionStep = options.compressionStep ?? DEFAULT_COMPRESSION_STEP;
     this.minQuality = options.minQuality ?? DEFAULT_MIN_QUALITY;
     this.forceCompression = options.forceCompression ?? false;
+    this.backgroundColor = options.backgroundColor;
 
     this.syncPreview();
   }
@@ -167,6 +169,7 @@ export class JPGER {
           maxQuality: this.maxQuality,
           minQuality: this.minQuality,
           compressionStep: this.compressionStep,
+          backgroundColor: this.backgroundColor,
         });
 
         blob = result.blob;

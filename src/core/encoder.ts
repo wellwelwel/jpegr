@@ -2,6 +2,12 @@ import type { DecodedImage } from './types.js';
 import { binaryToArrayBuffer } from './binary.js';
 import { supports } from './utils.js';
 
+const regex = {
+  hexColor: /^#([0-9A-Fa-f]{3}){1,2}$/,
+};
+
+const validateHexColor = (color: string): boolean => regex.hexColor.test(color);
+
 const dataUrlToFile = (dataUrl: string): File | Blob => {
   const [header, base64] = dataUrl.split(',');
   const mimeType = header.split(':')[1].split(';')[0];
@@ -33,7 +39,8 @@ const canvasToFile = (
 
 export const encodeToJpeg = (
   decoded: DecodedImage,
-  quality: number
+  quality: number,
+  backgroundColor: string = '#000000'
 ): Promise<File | Blob> => {
   const canvas = document.createElement('canvas');
   canvas.width = decoded.width;
@@ -42,7 +49,12 @@ export const encodeToJpeg = (
   const context = canvas.getContext('2d');
   if (!context) throw new Error('Canvas 2D context not supported');
 
-  context.fillStyle = '#000000';
+  if (validateHexColor(backgroundColor) === false)
+    throw new Error(
+      `Invalid background color: "${backgroundColor}". Expected a hex color string like "#000" or "#000000", for example.`
+    );
+
+  context.fillStyle = backgroundColor;
   context.fillRect(0, 0, canvas.width, canvas.height);
   context.drawImage(decoded.source, 0, 0, decoded.width, decoded.height);
 

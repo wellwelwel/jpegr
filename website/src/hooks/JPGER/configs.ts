@@ -4,4 +4,5 @@ export const DEFAULT_OPTIONS = {
   compressionStep: 0.1,
   minQuality: 0.1,
   forceCompression: false,
+  backgroundColor: '#000000',
 };
