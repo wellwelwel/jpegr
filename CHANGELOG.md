@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.2.0](https://github.com/wellwelwel/jpegr/compare/v2.1.0...v2.2.0) (2026-01-05)
+
+
+### Features
+
+* add background color option for images with transparency ([#10](https://github.com/wellwelwel/jpegr/issues/10)) ([65b61e4](https://github.com/wellwelwel/jpegr/commit/65b61e43c34c2056ca35f2e8e04b5b68d04b1913))
+* add force compression option to JPGER ([#8](https://github.com/wellwelwel/jpegr/issues/8)) ([bd39431](https://github.com/wellwelwel/jpegr/commit/bd39431c851e019f04595054864a9d6acf3a8348))
+
 ## [2.1.0](https://github.com/wellwelwel/jpegr/compare/v2.0.0...v2.1.0) (2026-01-04)
 
 
