@@ -95,6 +95,7 @@ const jpegr = new JPGER({
   maxQuality: 1,
   compressionStep: 0.1,
   forceCompression: false,
+  backgroundColor: '#000000',
 });
 ```
 
