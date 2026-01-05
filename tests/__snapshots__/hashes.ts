@@ -47,7 +47,7 @@ export const EXPECTED_HASHES: Hashes = {
     firefox: 'bde66d978fe1bde26821e7953a55955e45d28f7e896215af7e40a8acef517093',
     webkit: isCI
       ? '8c35f013ed31efd57bc7421d355e77e505c64fdf0ae20cda165c2bf25b29c5bc'
-      : 'ba9a53b8aeb9e2d93c52ba3e07732d671bb571a48c2b7eb51ceca57546b75a41',
+      : 'aacc6b19bfaee4c2f1a99c9de5f7d5eefeac95f68c660dc7a79a6c0b55664f57',
   },
 };
 
