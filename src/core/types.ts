@@ -50,6 +50,8 @@ export type JPGEROptions = {
   compressionStep?: number;
   /** Minimum quality threshold (default: 0.1) */
   minQuality?: number;
+  /** Force at least one compression even if the image is already JPEG and within size limit (default: false) */
+  forceCompression?: boolean;
 };
 
 export type DecodedImage = {

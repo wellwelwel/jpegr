@@ -30,6 +30,7 @@ export class JPGER {
   private readonly maxQuality: number;
   private readonly compressionStep: number;
   private readonly minQuality: number;
+  private readonly forceCompression: boolean;
 
   constructor(options: JPGEROptions = Object.create(null)) {
     this.previewElement = options.preview ?? null;
@@ -37,6 +38,7 @@ export class JPGER {
     this.maxQuality = options.maxQuality ?? DEFAULT_QUALITY;
     this.compressionStep = options.compressionStep ?? DEFAULT_COMPRESSION_STEP;
     this.minQuality = options.minQuality ?? DEFAULT_MIN_QUALITY;
+    this.forceCompression = options.forceCompression ?? false;
 
     this.syncPreview();
   }
@@ -150,7 +152,7 @@ export class JPGER {
       const isJpegWithinLimit =
         file.type === 'image/jpeg' && file.size <= maxSize;
 
-      if (isJpegWithinLimit || !canProcess) {
+      if ((isJpegWithinLimit && !this.forceCompression) || !canProcess) {
         // Pass through original file
         // Use original on unsupported browsers
         blob = file;

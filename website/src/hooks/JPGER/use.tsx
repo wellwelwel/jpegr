@@ -35,6 +35,7 @@ export const usePlayground = (): JPGERPlaygroundViewModel => {
         maxQuality: options.maxQuality,
         compressionStep: options.compressionStep,
         minQuality: options.minQuality,
+        forceCompression: options.forceCompression,
       }),
     [options]
   );
@@ -265,6 +266,13 @@ export const usePlayground = (): JPGERPlaygroundViewModel => {
     }));
   };
 
+  const onForceCompressionChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setOptions((prev) => ({
+      ...prev,
+      forceCompression: event.target.checked,
+    }));
+  };
+
   const onProcess = async () => {
     if (!selectedFile) return;
     await runProcess(selectedFile);
@@ -282,6 +290,7 @@ export const usePlayground = (): JPGERPlaygroundViewModel => {
     maxQuality: options.maxQuality,
     compressionStep: options.compressionStep,
     minQuality: options.minQuality,
+    forceCompression: options.forceCompression,
 
     selectedFile,
     objectUrl,
@@ -314,5 +323,6 @@ export const usePlayground = (): JPGERPlaygroundViewModel => {
     onmaxQualityChange,
     onCompressionStepChange,
     onminQualityChange,
+    onForceCompressionChange,
   };
 };
