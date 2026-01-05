@@ -14,6 +14,7 @@ export const ImagePreview = () => {
     fileInputRef,
     finalQualityText,
     finalSizeText,
+    forceCompression,
     info,
     isBusy,
     lastDebug,
@@ -21,6 +22,7 @@ export const ImagePreview = () => {
     minQuality,
     onCompressionStepChange,
     onDefaultMaxSizeMbChange,
+    onForceCompressionChange,
     onmaxQualityChange,
     onminQualityChange,
     onProcess,
@@ -230,6 +232,19 @@ export const ImagePreview = () => {
                   disabled={isBusy}
                   className='jpegr-input'
                 />
+              </div>
+
+              <div className='jpegr-field'>
+                <label className='jpegr-label'>
+                  <input
+                    type='checkbox'
+                    checked={forceCompression}
+                    onChange={onForceCompressionChange}
+                    disabled={isBusy}
+                    style={{ marginRight: '8px' }}
+                  />
+                  Force compression
+                </label>
               </div>
             </div>
           </section>

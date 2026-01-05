@@ -33,8 +33,8 @@ A browser module to take **all image formats** supported by `HTMLCanvasElement` 
 
 - Auto preview and easy upload to backend endpoints.
 - Comprehensive fallback support for legacy and _lite_ browsers.
-- Uses the original image when both format and size are within expectations.
 - Automatic compression starting from a chosen initial quality with granular steps.
+- Allows using the original image when both format and size are within expectations.
 - Normalizes **EXIF** orientation for **JPEG** inputs _(common "bug" in smartphone photos)_.
 
 ---
@@ -94,6 +94,7 @@ const jpegr = new JPGER({
   minQuality: 0.1,
   maxQuality: 1,
   compressionStep: 0.1,
+  forceCompression: false,
 });
 ```
 

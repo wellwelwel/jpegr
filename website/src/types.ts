@@ -14,6 +14,7 @@ export type JPGERPlaygroundViewModel = {
   maxQuality: number;
   compressionStep: number;
   minQuality: number;
+  forceCompression: boolean;
 
   selectedFile: File | Blob | null;
   objectUrl: string | null;
@@ -48,6 +49,7 @@ export type JPGERPlaygroundViewModel = {
   onmaxQualityChange: (event: ChangeEvent<HTMLInputElement>) => void;
   onCompressionStepChange: (event: ChangeEvent<HTMLInputElement>) => void;
   onminQualityChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  onForceCompressionChange: (event: ChangeEvent<HTMLInputElement>) => void;
 };
 
 export type RunDebug = {

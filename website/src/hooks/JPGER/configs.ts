@@ -3,4 +3,5 @@ export const DEFAULT_OPTIONS = {
   maxQuality: 1,
   compressionStep: 0.1,
   minQuality: 0.1,
+  forceCompression: false,
 };
