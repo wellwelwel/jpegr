@@ -19,7 +19,7 @@ A browser module to take **all image formats** supported by `HTMLCanvasElement` 
 - [Key features](#key-features)
 - [Installation](#installation)
 - [Quick start](#quick-start)
-- [API reference](#api-reference)
+- [Usage](#usage)
   - [Constructor](#constructor)
   - [Methods](#methods)
   - [Types](#types)
@@ -82,7 +82,7 @@ button?.addEventListener('click', () => {
 
 ---
 
-## API reference
+## Usage
 
 ### Constructor
 
