@@ -1,5 +1,10 @@
 # 🖼️ JPEGR
 
+[![NPM Version](https://img.shields.io/npm/v/jpegr.svg?label=&color=70a1ff&logo=npm&logoColor=white)](https://www.npmjs.com/package/jpegr)
+[![GitHub Workflow Status (Node.js)](https://img.shields.io/github/actions/workflow/status/wellwelwel/jpegr/ci_playwright.yml?event=push&label=&branch=main&logo=googlechrome&logoColor=535c68&color=badc58)](https://github.com/wellwelwel/jpegr/actions/workflows/ci_playwright.yml?query=branch%3Amain)
+[![GitHub Workflow Status (Node.js)](https://img.shields.io/github/actions/workflow/status/wellwelwel/jpegr/ci_playwright.yml?event=push&label=&branch=main&logo=firefoxbrowser&logoColor=535c68&color=badc58)](https://github.com/wellwelwel/jpegr/actions/workflows/ci_playwright.yml?query=branch%3Amain)
+[![GitHub Workflow Status (Node.js)](https://img.shields.io/github/actions/workflow/status/wellwelwel/jpegr/ci_playwright.yml?event=push&label=&branch=main&logo=safari&logoColor=535c68&color=badc58)](https://github.com/wellwelwel/jpegr/actions/workflows/ci_playwright.yml?query=branch%3Amain)
+
 A browser module to take **all image formats** supported by `HTMLCanvasElement` and convert them to **JPEG** with **size-targeted compression** to meet a configurable maximum output size.
 
 - 🎮 [**JPEGR Playground**](https://wellwelwel.github.io/jpegr/)
