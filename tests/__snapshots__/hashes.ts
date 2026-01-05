@@ -41,6 +41,14 @@ export const EXPECTED_HASHES: Hashes = {
       ? 'ba9a53b8aeb9e2d93c52ba3e07732d671bb571a48c2b7eb51ceca57546b75a41'
       : 'e057d9ff1f9c90e2a74bbac7b4d23604204c47622a9639ac0c8d2903acc623d4',
   },
+  'background-color.png': {
+    chromium:
+      '8c35f013ed31efd57bc7421d355e77e505c64fdf0ae20cda165c2bf25b29c5bc',
+    firefox: 'bde66d978fe1bde26821e7953a55955e45d28f7e896215af7e40a8acef517093',
+    webkit: isCI
+      ? 'ba9a53b8aeb9e2d93c52ba3e07732d671bb571a48c2b7eb51ceca57546b75a41'
+      : 'ba9a53b8aeb9e2d93c52ba3e07732d671bb571a48c2b7eb51ceca57546b75a41',
+  },
 };
 
 export const TEST_IMAGES = Object.keys(EXPECTED_HASHES).map((name) => ({
