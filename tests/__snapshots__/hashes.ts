@@ -33,6 +33,14 @@ export const EXPECTED_HASHES: Hashes = {
       ? '9a4d4e9cceef3a3d9c67d0c3c0f8e1f4a8ad7b4e29c78ff10bac2cd0c1f3b789'
       : 'a2954ccfc7ea7c5d3d513d1c6c3f1e94b6fa6310040cf4534966c2e56dac5c77',
   },
+  'force-compression.jpeg': {
+    chromium:
+      'ba9a53b8aeb9e2d93c52ba3e07732d671bb571a48c2b7eb51ceca57546b75a41',
+    firefox: '422ffec7f3b5ff4290c1cdae0ce8ede2dbe73767a2f94bcee1fcd4ab65125886',
+    webkit: isCI
+      ? 'e057d9ff1f9c90e2a74bbac7b4d23604204c47622a9639ac0c8d2903acc623d4'
+      : 'e057d9ff1f9c90e2a74bbac7b4d23604204c47622a9639ac0c8d2903acc623d4',
+  },
 };
 
 export const TEST_IMAGES = Object.keys(EXPECTED_HASHES).map((name) => ({

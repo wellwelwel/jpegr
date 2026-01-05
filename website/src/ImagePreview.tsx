@@ -237,6 +237,7 @@ export const ImagePreview = () => {
               <div className='jpegr-field'>
                 <label className='jpegr-label'>
                   <input
+                    id='force-compression'
                     type='checkbox'
                     checked={forceCompression}
                     onChange={onForceCompressionChange}

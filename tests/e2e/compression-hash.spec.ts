@@ -14,6 +14,14 @@ test.describe('Hash consistency', () => {
       const fileInput = page.locator('#file');
       await expect(fileInput).toBeVisible();
 
+      if (testImage.name === 'force-compression.jpeg') {
+        const forceCompressionCheckbox = page.locator(
+          'input[type="checkbox"]#force-compression'
+        );
+
+        await forceCompressionCheckbox.check({ force: true });
+      }
+
       await fileInput.setInputFiles(testImage.path);
 
       const processButton = page.locator('button:has-text("Process")');
