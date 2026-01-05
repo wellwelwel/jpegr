@@ -52,6 +52,8 @@ export type JPGEROptions = {
   minQuality?: number;
   /** Force at least one compression even if the image is already JPEG and within size limit (default: false) */
   forceCompression?: boolean;
+  /** Background color for images with transparency (hex string, e.g., "#000000") */
+  backgroundColor?: string;
 };
 
 export type DecodedImage = {
@@ -73,6 +75,7 @@ export type CompressionOptions = {
   maxQuality: number;
   minQuality: number;
   compressionStep: number;
+  backgroundColor?: string;
 };
 
 export type PreviewSource = {

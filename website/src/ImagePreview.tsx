@@ -3,6 +3,7 @@ import './css/styles.scss';
 
 export const ImagePreview = () => {
   const {
+    backgroundColor,
     canProcess,
     canvasOutputStrategy,
     compressedText,
@@ -20,6 +21,7 @@ export const ImagePreview = () => {
     lastDebug,
     maxQuality,
     minQuality,
+    onBackgroundColorChange,
     onCompressionStepChange,
     onDefaultMaxSizeMbChange,
     onForceCompressionChange,
@@ -235,18 +237,32 @@ export const ImagePreview = () => {
               </div>
 
               <div className='jpegr-field'>
-                <label className='jpegr-label'>
-                  <input
-                    id='force-compression'
-                    type='checkbox'
-                    checked={forceCompression}
-                    onChange={onForceCompressionChange}
-                    disabled={isBusy}
-                    style={{ marginRight: '8px' }}
-                  />
-                  Force compression
-                </label>
+                <label className='jpegr-label'>Background color</label>
+                <input
+                  id='background-color'
+                  type='color'
+                  value={backgroundColor}
+                  onChange={onBackgroundColorChange}
+                  disabled={isBusy}
+                  className='jpegr-input'
+                />
               </div>
+            </div>
+
+            <hr />
+
+            <div className='jpegr-field'>
+              <label className='jpegr-label'>
+                <input
+                  id='force-compression'
+                  type='checkbox'
+                  checked={forceCompression}
+                  onChange={onForceCompressionChange}
+                  disabled={isBusy}
+                  style={{ marginRight: '8px' }}
+                />
+                Force compression
+              </label>
             </div>
           </section>
 

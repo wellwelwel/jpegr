@@ -36,6 +36,7 @@ export const usePlayground = (): JPGERPlaygroundViewModel => {
         compressionStep: options.compressionStep,
         minQuality: options.minQuality,
         forceCompression: options.forceCompression,
+        backgroundColor: options.backgroundColor,
       }),
     [options]
   );
@@ -273,6 +274,13 @@ export const usePlayground = (): JPGERPlaygroundViewModel => {
     }));
   };
 
+  const onBackgroundColorChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setOptions((prev) => ({
+      ...prev,
+      backgroundColor: event.target.value,
+    }));
+  };
+
   const onProcess = async () => {
     if (!selectedFile) return;
     await runProcess(selectedFile);
@@ -291,6 +299,7 @@ export const usePlayground = (): JPGERPlaygroundViewModel => {
     compressionStep: options.compressionStep,
     minQuality: options.minQuality,
     forceCompression: options.forceCompression,
+    backgroundColor: options.backgroundColor,
 
     selectedFile,
     objectUrl,
@@ -324,5 +333,6 @@ export const usePlayground = (): JPGERPlaygroundViewModel => {
     onCompressionStepChange,
     onminQualityChange,
     onForceCompressionChange,
+    onBackgroundColorChange,
   };
 };

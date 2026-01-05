@@ -15,6 +15,7 @@ export type JPGERPlaygroundViewModel = {
   compressionStep: number;
   minQuality: number;
   forceCompression: boolean;
+  backgroundColor: string;
 
   selectedFile: File | Blob | null;
   objectUrl: string | null;
@@ -50,6 +51,7 @@ export type JPGERPlaygroundViewModel = {
   onCompressionStepChange: (event: ChangeEvent<HTMLInputElement>) => void;
   onminQualityChange: (event: ChangeEvent<HTMLInputElement>) => void;
   onForceCompressionChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  onBackgroundColorChange: (event: ChangeEvent<HTMLInputElement>) => void;
 };
 
 export type RunDebug = {

@@ -40,6 +40,14 @@ for (const featureName of FEATURES_TO_DISABLE) {
           await forceCompressionCheckbox.check({ force: true });
         }
 
+        if (testImage.name === 'background-color.png') {
+          const backgroundColorInput = page.locator(
+            'input[type="color"]#background-color'
+          );
+
+          await backgroundColorInput.fill('#693bfe');
+        }
+
         await fileInput.setInputFiles(testImage.path);
 
         const processButton = page.locator('button:has-text("Process")');
