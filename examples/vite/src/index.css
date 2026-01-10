@@ -14,6 +14,10 @@ body {
   padding: 15px;
 }
 
+hr {
+  width: 100%;
+}
+
 input {
   display: block;
   padding-bottom: 10px;

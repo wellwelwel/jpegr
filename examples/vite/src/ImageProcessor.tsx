@@ -3,7 +3,7 @@ import type { ChangeEvent } from 'react';
 import { JPGER } from 'jpegr';
 import { useRef, useState } from 'react';
 
-export default () => {
+export const ImageProcessor = () => {
   const { current: jpegr } = useRef(new JPGER());
   const [result, setResult] = useState<ProcessResult | null>(null);
 

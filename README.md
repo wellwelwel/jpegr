@@ -183,6 +183,35 @@ input.addEventListener('change', async () => {
 });
 ```
 
+> [!TIP]
+>
+> - You can use both multiple `HTMLInputElement`, `File`, and `Blob` in the `process` method.
+
+#### Merging multiple images
+
+```ts
+import { JPGER } from 'https://cdn.jsdelivr.net/npm/jpegr@latest/lib/index.mjs';
+
+const input = document.querySelector('#file');
+const preview = document.querySelector('#preview');
+const jpegr = new JPGER({ preview });
+
+input.addEventListener('change', async () => {
+  const files = Array.from(input.files);
+  const result = await jpegr.merge(files, 'vertical');
+
+  if (!result.success) {
+    console.error(result.error);
+    jpegr.clear();
+  }
+});
+```
+
+> [!TIP]
+>
+> - You can use both multiple `HTMLInputElement`, `File`, and `Blob` in the `merge` method.
+> - See the [**ImageMescler.tsx**](./examples/vite/src/ImageMescler.tsx) file for a complete React example of merging multiple images.
+
 ### React ⚛️
 
 > → [**See the functional example**](./examples/vite/).
