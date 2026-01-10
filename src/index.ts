@@ -1,11 +1,13 @@
 import type {
   JPGEROptions,
+  MergeDirection,
   ProcessedImage,
   ProcessResult,
   RuntimeSupport,
 } from './core/types.js';
 import { compressToFit } from './core/compressor.js';
 import { decodeImage } from './core/decoder.js';
+import { mergeImages } from './core/merger.js';
 import {
   buildPreviewSrc,
   formatBytes,
@@ -79,9 +81,6 @@ export class JPGER {
   }
 
   /**
-   * Clears the current processed image and frees associated resources.
-   */
-  /**
    * Clears the current processed image, error state, and frees associated resources.
    */
   clear(): void {
@@ -89,6 +88,108 @@ export class JPGER {
     this.processedImage = null;
     this.error = null;
     this.syncPreview();
+  }
+
+  /**
+   * Merges multiple images into a single image vertically or horizontally.
+   */
+  async merge(
+    inputs: (HTMLInputElement | File | Blob)[],
+    direction: MergeDirection,
+    maxSize = this.maxSize
+  ): Promise<ProcessResult> {
+    let decoded = null;
+
+    try {
+      if (!inputs || inputs.length === 0)
+        throw new Error('At least one input is required for merging.');
+
+      const canProcess = supportsImageProcessing();
+      if (!canProcess)
+        throw new Error(
+          'Image merging is not supported in this browser environment.'
+        );
+
+      const sources: (File | Blob)[] = [];
+      let originalSize = 0;
+
+      for (const input of inputs) {
+        if (input instanceof HTMLInputElement) {
+          const file = input.files?.[0];
+          if (!file) throw new Error('One or more file inputs are empty.');
+
+          sources.push(file);
+          originalSize += file.size;
+          continue;
+        }
+
+        sources.push(input);
+        originalSize += input.size;
+        continue;
+      }
+
+      const merged = await mergeImages(sources, {
+        direction,
+        quality: this.maxQuality,
+        backgroundColor: this.backgroundColor,
+      });
+
+      decoded = await decodeImage(merged.file);
+
+      let blob: File | Blob;
+      let compressed = false;
+      let finalQuality = this.maxQuality;
+
+      if (merged.file.size > maxSize) {
+        const result = await compressToFit(decoded, {
+          maxSize,
+          originalSize: merged.file.size,
+          maxQuality: this.maxQuality,
+          minQuality: this.minQuality,
+          compressionStep: this.compressionStep,
+          backgroundColor: this.backgroundColor,
+        });
+
+        blob = result.blob;
+        compressed = result.compressed;
+        finalQuality = result.finalQuality;
+      } else blob = merged.file;
+
+      const previewSrc = await buildPreviewSrc(blob);
+      const processed: ProcessedImage = {
+        file: blob,
+        src: previewSrc.src,
+        metadata: {
+          original: {
+            size: originalSize,
+            sizeFormatted: formatBytes(originalSize),
+            type: 'mixed',
+          },
+          processed: {
+            size: blob.size,
+            sizeFormatted: formatBytes(blob.size),
+            type: blob.type,
+            converted: true,
+            compressed,
+            quality: finalQuality,
+          },
+        },
+      };
+
+      return { success: true, error: null, image: processed };
+    } catch (error) {
+      console.error(error);
+
+      this.error =
+        error instanceof Error ? error.message : 'Failed to merge images.';
+
+      return {
+        success: false,
+        error: this.error,
+      };
+    } finally {
+      decoded?.dispose();
+    }
   }
 
   /**
@@ -254,4 +355,5 @@ export type {
   JPGEROptions,
   ProcessResult,
   RuntimeSupport,
+  MergeDirection,
 } from './core/types.js';

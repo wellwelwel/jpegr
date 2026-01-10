@@ -2,13 +2,14 @@ import type { DecodedImage } from './types.js';
 import { binaryToArrayBuffer } from './binary.js';
 import { supports } from './utils.js';
 
-const regex = {
+export const regex = {
   hexColor: /^#([0-9A-Fa-f]{3}){1,2}$/,
 };
 
-const validateHexColor = (color: string): boolean => regex.hexColor.test(color);
+export const validateHexColor = (color: string): boolean =>
+  regex.hexColor.test(color);
 
-const dataUrlToFile = (dataUrl: string): File | Blob => {
+export const dataUrlToFile = (dataUrl: string): File | Blob => {
   const [header, base64] = dataUrl.split(',');
   const mimeType = header.split(':')[1].split(';')[0];
   const decodedBinary = atob(base64);
@@ -19,7 +20,7 @@ const dataUrlToFile = (dataUrl: string): File | Blob => {
   return new File([buffer], 'image.jpg', { type: mimeType });
 };
 
-const canvasToFile = (
+export const canvasToFile = (
   canvas: HTMLCanvasElement,
   quality: number
 ): Promise<File | Blob> => {
