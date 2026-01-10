@@ -83,6 +83,20 @@ export type PreviewSource = {
   revoke?: () => void;
 };
 
+export type MergeDirection = 'horizontal' | 'vertical';
+
+export type MergeOptions = {
+  direction: MergeDirection;
+  quality?: number;
+  backgroundColor?: string;
+};
+
+export type MergedImageResult = {
+  file: File | Blob;
+  width: number;
+  height: number;
+};
+
 /**
  * **Note:** When a fallback is not available, **JPEGR** will use the original image.
  */
