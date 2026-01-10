@@ -36,11 +36,10 @@ A browser module to take **all image formats** supported by `HTMLCanvasElement` 
 
 ## Key features
 
-- Auto preview and easy upload to backend endpoints.
 - Comprehensive fallback support for legacy and _lite_ browsers.
-- Automatic compression starting from a chosen initial quality with granular steps.
-- Allows using the original image when both format and size are within expectations.
+- Auto preview and easy upload processed images to backend endpoints.
 - Normalizes **EXIF** orientation for **JPEG** inputs _(common "bug" in smartphone photos)_.
+- Merging multiple images into a single image, vertically or horizontally, using size-targeted compression.
 
 ---
 
