@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.0](https://github.com/wellwelwel/jpegr/compare/v2.2.0...v2.3.0) (2026-01-10)
+
+
+### Features
+
+* support images merging bidirectionally ([#11](https://github.com/wellwelwel/jpegr/issues/11)) ([a184442](https://github.com/wellwelwel/jpegr/commit/a18444267c2562ec18e31b3c30204906f8f84642))
+
 ## [2.2.0](https://github.com/wellwelwel/jpegr/compare/v2.1.0...v2.2.0) (2026-01-05)
 
 
