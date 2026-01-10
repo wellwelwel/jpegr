@@ -185,7 +185,7 @@ input.addEventListener('change', async () => {
 
 > [!TIP]
 >
-> - You can use both multiple `HTMLInputElement`, `File`, and `Blob` in the `process` method.
+> - You can use both `HTMLInputElement`, `File`, or `Blob` in the `process` method.
 
 #### Merging multiple images
 
