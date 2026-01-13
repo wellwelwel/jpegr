@@ -220,7 +220,7 @@ export class JPGER {
       body: formData,
     });
 
-    if (!response.ok) throw new Error('Upload failed');
+    if (!response.ok) throw new Error(await response.text());
 
     return response;
   }
