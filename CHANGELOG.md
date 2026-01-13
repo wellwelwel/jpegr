@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.1](https://github.com/wellwelwel/jpegr/compare/v2.3.0...v2.3.1) (2026-01-13)
+
+
+### Bug Fixes
+
+* improve error handling during image upload ([08f0535](https://github.com/wellwelwel/jpegr/commit/08f0535688234684c0036607fa3fd869ed4bcbf9))
+
 ## [2.3.0](https://github.com/wellwelwel/jpegr/compare/v2.2.0...v2.3.0) (2026-01-10)
 
 
