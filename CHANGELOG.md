@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.2](https://github.com/wellwelwel/jpegr/compare/v2.3.1...v2.3.2) (2026-01-13)
+
+
+### Bug Fixes
+
+* refresh processed image on merge ([90ebc37](https://github.com/wellwelwel/jpegr/commit/90ebc37a924ba1453eb6065dc0d7234dd0a39a7a))
+
 ## [2.3.1](https://github.com/wellwelwel/jpegr/compare/v2.3.0...v2.3.1) (2026-01-13)
 
 
