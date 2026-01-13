@@ -1,6 +1,6 @@
 {
   "name": "jpegr",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "🖼️ Convert images to JPEG with size-targeted compression directly from browser with high compatibility rate.",
   "main": "./lib/index.js",
   "module": "./lib/index.mjs",
